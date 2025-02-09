@@ -7,7 +7,7 @@
     <title>API Routes</title>
     <style>
         :root {
-            --background-color: var(--vscode-editor-background, #ffffff);
+            --background-color: var(--vscode-sideBar-background, #ffffff);
             --text-color: var(--vscode-editor-foreground, #333333);
             --list-hover-background: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.05));
         }
@@ -52,7 +52,7 @@
         }
 
         .path {
-            color: white;
+            color: var(--vscode-editor-foreground);
         }
 
         .file {
@@ -76,11 +76,30 @@
 
         .group-header {
             padding: 4px 12px;
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
             opacity: 0.8;
             margin-top: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .group-header .arrow {
+            margin-right: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .group-header.expanded .arrow {
+            transform: rotate(90deg);
+        }
+
+        .group-content {
+            display: none;
+        }
+
+        .group-content.visible {
+            display: block;
         }
     </style>
 </head>
@@ -110,9 +129,9 @@
             border: 1px solid transparent;
             padding: 4px 8px;
             /* Increased padding for a more clickable area */
-            margin: 0 4px;
+            margin: 0 3px;
             /* Horizontal spacing between buttons */
-            border-radius: 4px;
+            border-radius: 3px;
             color: #64748b;
             cursor: pointer;
             font-size: inherit;
@@ -225,9 +244,25 @@
                     return indexA - indexB;
                 })
                 .map(([group, items]) => `
-        <div class="group-header">${group}</div>
-        ${items.map(route => renderRoute(route)).join('')}
-      `).join('');
+                <div class="group-header expanded" onclick="toggleGroup('${group}')">
+                    <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" fill="currentColor"/>
+                    </svg>
+                    ${group}
+                </div>
+                <div class="group-content visible" id="group-${group}">
+                    ${items.map(route => renderRoute(route)).join('')}
+                </div>
+            `).join('');
+        }
+
+        function toggleGroup(group) {
+            const groupHeader = document.querySelector(`.group-header[onclick="toggleGroup('${group}')"]`);
+            const groupContent = document.getElementById(`group-${group}`);
+            if (groupContent) {
+                groupContent.classList.toggle('visible');
+                groupHeader.classList.toggle('expanded');
+            }
         }
 
         function openRoute(file, line) {

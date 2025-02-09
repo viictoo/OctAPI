@@ -26,6 +26,12 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 				case "openFile":
 					openFileAtLine(message.file, message.line)
 					break
+				case "openSettings":
+					vscode.commands.executeCommand("workbench.action.openSettings", "apiMan")
+					break
+				case "vscodeFile":
+					vscode.commands.executeCommand('workbench.action.files.openFolder');
+					break
 			}
 		})
 	}

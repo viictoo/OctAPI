@@ -1,34 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome / no routes</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 20px;
-            }
-            .message {
-                font-size: 18px;
-                color: #f93e3e;
-                margin-top: 20px;
-            }
-            .settings-link {
-                color: #007acc;
-                text-decoration: none;
-                font-weight: bold;
-            }
-            .settings-link:hover {
-                text-decoration: underline;
-            }
-        </style>
-    </head>
-    <body>
-        <h2>No routes found</h2>
-        <p class="message">It looks like no API routes were detected.</p>
-        <p>Please check your settings or project structure.</p>
-        <a href="vscode://settings" class="settings-link">Go to Settings</a>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No Routes Found</title>
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            color: var(--vscode-foreground);
+            font-size: var(--vscode-font-size);
+            line-height: 1.6;
+            padding: 20px;
+            background-color: var(--vscode-sideBar-background);
+        }
+        .container {
+            max-width: 500px;
+            padding: 10px;
+            border-radius: 8px;
+            background: var(--vscode-sideBar-background);
+        }
+        h2 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--vscode-editor-foreground);
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        .message {
+            color: var(--vscode-errorForeground);
+            font-weight: 500;
+        }
+        .info {
+            font-size: 0.85em;
+            color: var(--vscode-descriptionForeground);
+            margin-top: 20px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: none;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: var(--vscode-font-size);
+            border-radius: 4px;
+            transition: background 0.2s ease-in-out;
+        }
+        .button:hover {
+            background-color: var(--vscode-button-hoverBackground);
+        }
+        .button:focus {
+            outline: 2px solid var(--vscode-focusBorder);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>No API Routes Found</h2>
+        <p class="message">No API routes were detected in the current workspace.</p>
+        <p>Please open a different folder or check your extension settings.</p>
+        <div class="button-container">
+            <button onclick="openFolder()" class="button">Open Folder</button>
+            <button onclick="openSettings()" class="button">Open Settings</button>
+        </div>
+        <p class="info">We're continuously working on expanding support for more languages and frameworks. Stay tuned for updates!</p>
+    </div>
+    <script>
+        const vscode = acquireVsCodeApi();
+        function openSettings() {
+            vscode.postMessage({ command: 'openSettings' });
+        }
+        function openFolder() {
+            vscode.postMessage({ command: 'vscodeFile' });
+        }
+    </script>
+</body>
 </html>
