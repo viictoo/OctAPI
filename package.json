@@ -96,21 +96,15 @@
             "flask"
           ],
           "order": 3
-        },
-        "apiMan.groupBy": {
-          "type": "string",
-          "enum": ["none", "method", "basePath"],
-          "default": "none",
-          "description": "Group routes by method, base path, or no grouping",
-          "order": 4
         }
       }
     }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "tsc -p ./ && npm run copy-templates",
+    "copy-templates": "cp -r src/webview/templates out/webview",
+    "watch": "tsc -watch -p ./ && npm run copy-templates",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
