@@ -1,0 +1,157 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+target/
+out/
+
+# C++
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.exe
+*.out
+*.app
+*.dSYM/
+*.pdb
+
+# Go
+*.exe
+*.test
+*.out
+
+# Rust
+/target/
+
+# Ruby
+*.gem
+*.rbc
+.ruby-version
+.ruby-gemset
+.rvmrc
+.rvm/
+
+# PHP
+vendor/
+
+# Composer
+composer.lock
+
+# Laravel
+/vendor/
+/node_modules/
+/public/hot
+/public/storage
+/storage/*.key
+.env
+Homestead.yaml
+Homestead.json
+/.vagrant
+
+# JavaScript
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp/
+.pnp.js
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.test
+.env.production
+
+# Miscellaneous
+*.log
+*.lock
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.swn
+*.pid
+*.seed
+*.pid.lock
+*.cover
+*.coverdata
+*.coverprofile
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*
+*.coverprofile.*

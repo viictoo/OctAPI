@@ -1,0 +1,135 @@
+{
+  "name": "api-man",
+  "displayName": "api-man",
+  "description": "an api manager",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "apiManagerSideBar",
+        "contents": "Seems no routes were found. Either change settings or open a new folder.\n[Open Folder](command:vscode.openFolder)\n[Change Settings](command:api-man.openSettings)\nSupport for more languages and frameworks coming soon."
+      }
+    ],
+    "commands": [
+      {
+        "command": "api-man.refreshEntry",
+        "icon": "$(refresh)",
+        "title": "Refresh Routes"
+      },
+      {
+        "command": "api-man.openSettings",
+        "icon": "$(gear)",
+        "title": "Change Settings"
+      },
+      {
+        "command": "api-man.openRouteInFile",
+        "title": "Open Route In File",
+        "icon": "$(file-code)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "api-man",
+          "title": "API Manager",
+          "icon": "resources/snowflake.svg"
+        }
+      ]
+    },
+    "views": {
+      "api-man": [
+        {
+          "id": "apiManagerSideBar",
+          "name": "Routes",
+          "contextualTitle": "API Manager",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "api-man.openSettings",
+          "when": "view == apiManagerSideBar",
+          "group": "navigation"
+        },
+        {
+          "command": "api-man.refreshEntry",
+          "when": "view == apiManagerSideBar",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "APIMan",
+      "properties": {
+        "apiMan.path": {
+          "type": "string",
+          "default": "./src/",
+          "description": "Path to your routes",
+          "order": 1
+        },
+        "apiMan.language": {
+          "type": "string",
+          "default": "javascript",
+          "description": "Choose your language",
+          "enum": [
+            "javascript",
+            "python"
+          ],
+          "order": 2
+        },
+        "apiMan.framework": {
+          "type": "string",
+          "default": "express",
+          "description": "Choose your framework",
+          "enum": [
+            "express",
+            "flask"
+          ],
+          "order": 3
+        },
+        "apiMan.groupBy": {
+          "type": "string",
+          "enum": ["none", "method", "basePath"],
+          "default": "none",
+          "description": "Group routes by method, base path, or no grouping",
+          "order": 4
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@babel/parser": "^7.26.7",
+    "@types/babel__parser": "^7.1.5",
+    "@types/babel__traverse": "^7.20.6",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.96.0",
+    "@typescript-eslint/eslint-plugin": "^8.22.0",
+    "@typescript-eslint/parser": "^8.22.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.19.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@babel/traverse": "^7.26.7"
+  }
+}
