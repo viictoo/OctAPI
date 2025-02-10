@@ -29,13 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Listen for configuration changes and refresh the webview if needed
 	vscode.workspace.onDidChangeConfiguration((event) => {
-		// console.log("Configuration changed:", event)
-		if (event.affectsConfiguration("apiMan.path") || event.affectsConfiguration("apiMan.groupBy")) {
+		if (event.affectsConfiguration("apiMan.path") || event.affectsConfiguration("apiMan.framework")) {
 			provider.updateWebview()
 		}
 	})
 
-	// console.log(`WATCHING: ${routePath}`)
 	const config = vscode.workspace.getConfiguration("apiMan");
 	const routePath = config.get<string>("path", "./src/");
 	

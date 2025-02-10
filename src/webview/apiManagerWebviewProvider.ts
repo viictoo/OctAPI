@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from "vscode";
 import openFileAtLine from "../commands/openRouteCommand";
-import extractExpressRoutes from '../languages/express';
+import frameworkMiddleware from '../languages';
 import { Route } from '../types';
 
 export default class ApiManagerWebviewProvider implements vscode.WebviewViewProvider {
@@ -38,10 +38,11 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 
 	// Re-extract routes and update the HTML content of the webview
 	async updateWebview() {
-		const routes = await extractExpressRoutes()
+		const routes = await frameworkMiddleware()
 		if (routes.length === 0) {
 			const html = this.getWelcomeContent()
 			if (this._view) {
+				console.log('No routes found, displaying welcome message.')
 				this._view.webview.html = html
 			}
 			return

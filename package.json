@@ -12,12 +12,6 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "viewsWelcome": [
-      {
-        "view": "apiManagerSideBar",
-        "contents": "Seems no routes were found. Either change settings or open a new folder.\n[Open Folder](command:vscode.openFolder)\n[Change Settings](command:api-man.openSettings)\nSupport for more languages and frameworks coming soon."
-      }
-    ],
     "commands": [
       {
         "command": "api-man.refreshEntry",
@@ -77,16 +71,6 @@
           "description": "Path to your routes",
           "order": 1
         },
-        "apiMan.language": {
-          "type": "string",
-          "default": "javascript",
-          "description": "Choose your language",
-          "enum": [
-            "javascript",
-            "python"
-          ],
-          "order": 2
-        },
         "apiMan.framework": {
           "type": "string",
           "default": "express",
@@ -95,7 +79,7 @@
             "express",
             "flask"
           ],
-          "order": 3
+          "order": 2
         }
       }
     }
