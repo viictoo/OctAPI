@@ -24,16 +24,42 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(openSettings)
 
 	// Command to open a route in its source file at the specified line
-	const openRouteInFile = vscode.commands.registerCommand("api-man.openRouteInFile", (file: string, line: number) => openFileAtLine(file, line));	
+	const openRouteInFile = vscode.commands.registerCommand("api-man.openRouteInFile", (file: string, line: number) => openFileAtLine(file, line));
 	context.subscriptions.push(openRouteInFile)
 
 	// Listen for configuration changes and refresh the webview if needed
 	vscode.workspace.onDidChangeConfiguration((event) => {
-		console.log("Configuration changed:", event)
+		// console.log("Configuration changed:", event)
 		if (event.affectsConfiguration("apiMan.path") || event.affectsConfiguration("apiMan.groupBy")) {
 			provider.updateWebview()
 		}
 	})
+
+	// console.log(`WATCHING: ${routePath}`)
+	const config = vscode.workspace.getConfiguration("apiMan");
+	const routePath = config.get<string>("path", "./src/");
+	
+	if (!vscode.workspace.workspaceFolders) {
+		console.error("No workspace folder open!");
+	} else if (!routePath) {
+		console.error("No path configured for apiMan.path");
+	} else {
+		const absolutePath = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, routePath).fsPath;
+	
+		const watcher = vscode.workspace.createFileSystemWatcher(`${absolutePath}/**/*`);
+		const updateView = (uri: vscode.Uri) => {
+			provider.updateWebview();
+		};
+	
+		watcher.onDidChange(updateView);
+		watcher.onDidCreate(updateView);
+		watcher.onDidDelete(updateView);
+		context.subscriptions.push(watcher);
+	
+		// Fallback: Trigger update on file save
+		vscode.workspace.onDidSaveTextDocument((doc) => updateView(doc.uri));
+	}
+	
 }
 
 

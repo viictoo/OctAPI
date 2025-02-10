@@ -111,12 +111,33 @@
             <button onclick="handleGrouping('basePath', this)">Basepath</button>
             <button onclick="handleGrouping('method', this)">Method</button>
         </span>
+        <span class="fold-controls" id="foldControls" style="display: none;">
+            <button onclick="unfoldAll()" title="Unold All">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 8l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+            <button onclick="foldAll()" title="Fold All">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 16l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </button>
+        </span>
     </div>
+
+    <ul id="routesList"></ul>
 
     <style>
         .controls {
             margin-bottom: 20px;
-            /* More space below the controls */
+            display: flex;
+            justify-content: space-between;
         }
 
         .group-text {
@@ -124,13 +145,12 @@
             color: #94a3b8;
         }
 
-        .group-text button {
+        .group-text button,
+        .fold-controls button {
             background: transparent;
             border: 1px solid transparent;
-            padding: 4px 8px;
-            /* Increased padding for a more clickable area */
+            padding: 4px 4px;
             margin: 0 3px;
-            /* Horizontal spacing between buttons */
             border-radius: 3px;
             color: #64748b;
             cursor: pointer;
@@ -139,7 +159,8 @@
             transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
-        .group-text button:hover {
+        .group-text button:hover,
+        .fold-controls button:hover {
             background: #334155;
             border-color: #334155;
             color: #e2e8f0;
@@ -153,11 +174,29 @@
     </style>
 
     <script>
+        function foldAll() {
+            document.querySelectorAll('.group-content').forEach(groupContent => {
+                groupContent.classList.remove('visible');
+            });
+            document.querySelectorAll('.group-header').forEach(groupHeader => {
+                groupHeader.classList.remove('expanded');
+            });
+        }
+
+        function unfoldAll() {
+            document.querySelectorAll('.group-content').forEach(groupContent => {
+                groupContent.classList.add('visible');
+            });
+            document.querySelectorAll('.group-header').forEach(groupHeader => {
+                groupHeader.classList.add('expanded');
+            });
+        }
         function handleGrouping(value, element) {
             // If already active, turn it off and revert grouping
             if (element.classList.contains('active')) {
                 element.classList.remove('active');
                 changeGrouping('none');  // changeGrouping should be defined elsewhere
+                document.getElementById('foldControls').style.display = 'none';
                 return;
             }
 
@@ -169,6 +208,7 @@
             // Activate the clicked button and update grouping
             element.classList.add('active');
             changeGrouping(value);  // changeGrouping should be defined elsewhere
+            document.getElementById('foldControls').style.display = 'inline';
         }
     </script>
 

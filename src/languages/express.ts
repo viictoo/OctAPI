@@ -9,7 +9,7 @@ import { Route } from "../types"
 export default async function extractExpressRoutes() {
     const config = vscode.workspace.getConfiguration("apiMan")
     const routePath = config.get<string>("path", "./src/")
-    console.log(`Configured route path: ${routePath}`)
+    // console.log(`Configured route path: ${routePath}`)
 
     const workspaceFolders = vscode.workspace.workspaceFolders
     if (!workspaceFolders) {
@@ -19,15 +19,15 @@ export default async function extractExpressRoutes() {
 
     const workspaceRoot = workspaceFolders[0].uri.fsPath
     const absoluteRoutePath = path.resolve(workspaceRoot, routePath)
-    console.log(`Absolute route path: ${absoluteRoutePath}`)
+    // console.log(`Absolute route path: ${absoluteRoutePath}`)
 
     const directoryUri = vscode.Uri.file(absoluteRoutePath)
     const fileUris = await getFilesRecursively(directoryUri)
     const jsFileUris = fileUris.filter((uri) => uri.fsPath.endsWith(".js") || uri.fsPath.endsWith(".ts"))
-    console.log(
-        `Found files:`,
-        jsFileUris.map((uri) => uri.fsPath),
-    )
+    // console.log(
+    //     `Found files:`,
+    //     jsFileUris.map((uri) => uri.fsPath),
+    // )
 
     const routesList: Route[] = []
     const routerVariables = new Set<string>()
@@ -67,7 +67,7 @@ export default async function extractExpressRoutes() {
                     t.isIdentifier(node.arguments[1])
                 ) {
                     nestedRouters.set(node.arguments[1].name, node.arguments[0].value)
-                    console.log(`Detected mounted router: ${node.arguments[1].name} at ${node.arguments[0].value}`)
+                    // console.log(`Detected mounted router: ${node.arguments[1].name} at ${node.arguments[0].value}`)
                 }
 
                 // Case 2: Track Direct Routes (app.METHOD(path, handler))
@@ -101,7 +101,7 @@ export default async function extractExpressRoutes() {
                     const pathValue = t.isStringLiteral(node.arguments[0]) ? node.arguments[0].value : ""
                     const parentRouter = node.callee.object.name
                     const detectedBasePath = nestedRouters.get(parentRouter) || ""
-                    console.log(`Detected nested route: ${method} ${detectedBasePath}${pathValue}`)
+                    // console.log(`Detected nested route: ${method} ${detectedBasePath}${pathValue}`)
 
                     routesList.push({
                         method,
@@ -114,6 +114,6 @@ export default async function extractExpressRoutes() {
             },
         })
     }
-    console.log(routesList)
+    // console.log(routesList)
     return routesList
 }
