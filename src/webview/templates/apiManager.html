@@ -234,7 +234,8 @@
         }
 
         function renderRoute(route) {
-            const fullPath = `${route.basePath}${route.path}`;
+            // Conditionally include basePath based on the current grouping
+            const fullPath = currentGrouping === 'basePath' ? route.path : `${route.basePath}${route.path}`;
             const methodIcon = getMethodIcon(route.method);
             const pathComponents = route.file.split('/');
             const description = pathComponents.slice(-2).join('/');
@@ -272,7 +273,7 @@
                 groups[key].push(route);
             });
 
-            const desiredOrder = currentGrouping === 'method' ? ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] : [];
+            const desiredOrder = currentGrouping === 'method' ? ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'ANY'] : [];
 
             list.innerHTML = Object.entries(groups)
                 .sort(([a], [b]) => {

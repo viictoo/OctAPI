@@ -1,10 +1,15 @@
 import extractExpressRoutes from "./express";
 import * as vscode from "vscode";
+import extractNestJSRoutes from "./nestjs";
 
 const frameworks = [
     {
         name: 'express',
         function: extractExpressRoutes
+    },
+    {
+        name: 'nestjs',
+        function: extractNestJSRoutes
     }
 ]
 

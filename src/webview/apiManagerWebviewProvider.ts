@@ -61,7 +61,7 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 						.method-post { color: var(--post-color, #49cc90); }
 						.method-put { color: var(--put-color, #fca130); }
 						.method-delete { color: var(--delete-color, #f93e3e); }
-						.method-other { color: var(--other-color, #50e3c2); }
+						.method-any { color: var(--any-color, #50e3c2); }
 					\`;
 					document.head.appendChild(style);
 				</script>
