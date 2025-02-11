@@ -1,6 +1,8 @@
 import extractExpressRoutes from "./express";
 import * as vscode from "vscode";
 import extractNestJSRoutes from "./nestjs";
+import extractFastifyRoutes from "./fastify";
+import extractKoaRoutes from "./koa";
 
 const frameworks = [
     {
@@ -10,6 +12,14 @@ const frameworks = [
     {
         name: 'nestjs',
         function: extractNestJSRoutes
+    },
+    {
+        name: 'fastify',
+        function: extractFastifyRoutes
+    },
+    {
+        name: 'koa',
+        function: extractKoaRoutes
     }
 ]
 

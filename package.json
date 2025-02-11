@@ -77,7 +77,8 @@
           "description": "Choose your framework",
           "enum": [
             "express",
-            "nestjs"
+            "nestjs",
+            "koa"
           ],
           "order": 2
         }

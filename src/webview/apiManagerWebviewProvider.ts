@@ -21,6 +21,7 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 		webviewView.webview.onDidReceiveMessage((message) => {
 			switch (message.command) {
 				case "refresh":
+					if (this._view) this._view.webview.html = this.getLoading()
 					this.updateWebview()
 					break
 				case "openFile":
@@ -38,6 +39,7 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 
 	// Re-extract routes and update the HTML content of the webview
 	async updateWebview() {
+		if (this._view) this._view.webview.html = this.getLoading()
 		const routes = await frameworkMiddleware()
 		if (routes.length === 0) {
 			const html = this.getWelcomeContent()
