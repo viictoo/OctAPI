@@ -13,7 +13,7 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 	resolveWebviewView(webviewView: vscode.WebviewView) {
 		this._view = webviewView
 		webviewView.webview.options = { enableScripts: true }
-
+		this._view.webview.html = this.getLoading()
 		// Initial load of routes
 		this.updateWebview()
 
@@ -61,7 +61,7 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 						.method-post { color: var(--post-color, #49cc90); }
 						.method-put { color: var(--put-color, #fca130); }
 						.method-delete { color: var(--delete-color, #f93e3e); }
-						.method-any { color: var(--any-color, #50e3c2); }
+						.method-other { color: var(--other-color, #50e3c2); }
 					\`;
 					document.head.appendChild(style);
 				</script>
@@ -81,6 +81,12 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 
 	private getWelcomeContent(): string {
 		const htmlFilePath = path.join(__dirname, '..', 'webview', 'templates', 'welcome.html');
+		let htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
+		return htmlContent;
+	}
+
+	private getLoading(): string {
+		const htmlFilePath = path.join(__dirname, '..', 'webview', 'templates', 'loading.html');
 		let htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
 		return htmlContent;
 	}
