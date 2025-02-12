@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import extractNestJSRoutes from "./nestjs";
 import extractFastifyRoutes from "./fastify";
 import extractKoaRoutes from "./koa";
+import extractDjangoRoutes from "./django";
 
 const frameworks = [
     {
@@ -20,6 +21,10 @@ const frameworks = [
     {
         name: 'koa',
         function: extractKoaRoutes
+    },
+    {
+        name: 'django',
+        function: extractDjangoRoutes
     }
 ]
 
