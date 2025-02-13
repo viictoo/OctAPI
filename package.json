@@ -1,7 +1,7 @@
 {
-  "name": "api-man",
-  "displayName": "api-man",
-  "description": "an api manager",
+  "name": "octapi",
+  "displayName": "OctAPI",
+  "description": "An api manager",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.96.0"
@@ -14,36 +14,36 @@
   "contributes": {
     "commands": [
       {
-        "command": "api-man.refreshEntry",
+        "command": "octapi.refreshEntry",
         "icon": "$(refresh)",
         "title": "Refresh Routes"
       },
       {
-        "command": "api-man.openSettings",
+        "command": "octapi.openSettings",
         "icon": "$(gear)",
         "title": "Change Settings"
       },
       {
-        "command": "api-man.openRouteInFile",
-        "title": "Open Route In File",
-        "icon": "$(file-code)"
+        "command": "octapi.openRouteInFile",
+        "icon": "$(file-code)",
+        "title": "Open Route In File"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "api-man",
-          "title": "API Manager",
-          "icon": "resources/snowflake.svg"
+          "id": "octapi",
+          "title": "OctAPI",
+          "icon": "resources/logo2.svg"
         }
       ]
     },
     "views": {
-      "api-man": [
+      "octapi": [
         {
-          "id": "apiManagerSideBar",
+          "id": "OctAPISideBar",
           "name": "Routes",
-          "contextualTitle": "API Manager",
+          "contextualTitle": "OctAPI",
           "type": "webview"
         }
       ]
@@ -51,34 +51,34 @@
     "menus": {
       "view/title": [
         {
-          "command": "api-man.openSettings",
-          "when": "view == apiManagerSideBar",
+          "command": "octapi.openSettings",
+          "when": "view == OctAPISideBar",
           "group": "navigation"
         },
         {
-          "command": "api-man.refreshEntry",
-          "when": "view == apiManagerSideBar",
+          "command": "octapi.refreshEntry",
+          "when": "view == OctAPISideBar",
           "group": "navigation"
         }
       ]
     },
     "configuration": {
-      "title": "APIMan",
+      "title": "OctAPI",
       "properties": {
-        "apiMan.path": {
+        "OctAPI.path": {
           "type": "string",
           "default": "./src/",
           "description": "Path to your routes",
           "order": 1
         },
-        "apiMan.framework": {
+        "OctAPI.framework": {
           "type": "string",
-          "default": "express",
+          "default": "Express",
           "description": "Choose your framework",
           "enum": [
-            "express",
-            "nestjs",
-            "koa"
+            "Express",
+            "NestJS",
+            "Koa"
           ],
           "order": 2
         }
@@ -96,6 +96,7 @@
   },
   "devDependencies": {
     "@babel/parser": "^7.26.7",
+    "@babel/plugin-proposal-decorators": "^7.25.9",
     "@types/babel__parser": "^7.1.5",
     "@types/babel__traverse": "^7.20.6",
     "@types/mocha": "^10.0.10",

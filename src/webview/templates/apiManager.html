@@ -52,26 +52,26 @@
         }
 
         .path {
-        color: var(--vscode-editor-foreground);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        /* max-width: 200px; */
-        display: inline-block;
-        vertical-align: middle;
-    }
+            color: var(--vscode-editor-foreground);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* max-width: 200px; */
+            display: inline-block;
+            vertical-align: middle;
+        }
 
-    .file {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        /* max-width: 150px; */
-        display: inline-block;
-        vertical-align: middle;
-        opacity: 0.7;
-        font-size: 12px;
-        margin-left: auto;
-    }
+        .file {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            /* max-width: 150px; */
+            display: inline-block;
+            vertical-align: middle;
+            opacity: 0.7;
+            font-size: 12px;
+            margin-left: auto;
+        }
 
         .controls {
             margin-bottom: 8px;
@@ -113,23 +113,24 @@
         .group-content.visible {
             display: block;
         }
+
         .controls {
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
         }
-        
+
         .group-text {
             font-size: 13px;
             color: #94a3b8;
         }
-        
+
         .group-text button,
         .fold-controls button {
             background: transparent;
             border: 1px solid transparent;
             padding: 4px 4px;
-            margin: 0 3px;
+            margin: 0 1px;
             border-radius: 3px;
             color: #64748b;
             cursor: pointer;
@@ -137,14 +138,14 @@
             font-family: inherit;
             transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
-        
+
         .group-text button:hover,
         .fold-controls button:hover {
             background: #334155;
             border-color: #334155;
             color: #e2e8f0;
         }
-        
+
         .group-text button.active {
             background: #475569;
             border-color: #475569;
@@ -161,20 +162,16 @@
             <button onclick="handleGrouping('method', this)">Method</button>
         </span>
         <span class="fold-controls" id="foldControls" style="display: none;">
-            <button onclick="unfoldAll()" title="Unold All">
+            <button onclick="unfoldAll()" title="Unfold All">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 8l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                    <path d="M5 8l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M5 14l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </button>
             <button onclick="foldAll()" title="Fold All">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 16l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                    <path d="M5 18l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </button>
         </span>
@@ -221,7 +218,7 @@
         }
         let currentGrouping = 'none';
         let routes = JSON.parse('^routes^');
-        
+
         function getMethodIcon(method) {
             const iconSize = 16;
             switch (method.toUpperCase()) {
@@ -237,16 +234,16 @@
                     return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
             }
         }
-        
-        function renderRoute(route) {
-        // Conditionally include basePath based on the current grouping
-        const fullPath = currentGrouping === 'basePath' ? route.path : `${route.basePath}${route.path}`;
-        const methodIcon = getMethodIcon(route.method);
-        const pathComponents = route.file.split('/');
-        const description = pathComponents.slice(-2).join('/');
-        const methodClass = `method-${route.method.toLowerCase()}`;
 
-        return `
+        function renderRoute(route) {
+            // Conditionally include basePath based on the current grouping
+            const fullPath = currentGrouping === 'basePath' ? route.path : `${route.basePath}${route.path}`;
+            const methodIcon = getMethodIcon(route.method);
+            const pathComponents = route.file.split('/');
+            const description = pathComponents.slice(-2).join('/');
+            const methodClass = `method-${route.method.toLowerCase()}`;
+
+            return `
             <li onclick="openRoute('${route.file}', ${route.fileLine})">
                 <span class="method ${methodClass}">
                     ${methodIcon}
@@ -256,30 +253,30 @@
                 <span class="file">- ${description}</span>
             </li>
         `;
-    }
-        
+        }
+
         function changeGrouping(value) {
             currentGrouping = value;
             renderRoutes();
         }
-        
+
         function renderRoutes() {
             const list = document.getElementById('routesList');
-        
+
             if (currentGrouping === 'none') {
                 list.innerHTML = routes.map(route => renderRoute(route)).join('');
                 return;
             }
-        
+
             const groups = {};
             routes.forEach(route => {
                 const key = currentGrouping === 'method' ? route.method : (route.basePath || '/');
                 if (!groups[key]) groups[key] = [];
                 groups[key].push(route);
             });
-        
+
             const desiredOrder = currentGrouping === 'method' ? ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'ANY'] : [];
-        
+
             list.innerHTML = Object.entries(groups)
                 .sort(([a], [b]) => {
                     const indexA = desiredOrder.indexOf(a);
@@ -301,7 +298,7 @@
                 </div>
             `).join('');
         }
-        
+
         function toggleGroup(group) {
             const groupHeader = document.querySelector(`.group-header[onclick="toggleGroup('${group}')"]`);
             const groupContent = document.getElementById(`group-${group}`);
@@ -310,11 +307,11 @@
                 groupHeader.classList.toggle('expanded');
             }
         }
-        
+
         function openRoute(file, line) {
             vscode.postMessage({ command: 'openFile', file: file, line: line });
         }
-        
+
         // Initial render
         renderRoutes();
     </script>

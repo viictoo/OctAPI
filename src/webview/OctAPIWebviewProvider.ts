@@ -5,7 +5,7 @@ import openFileAtLine from "../commands/openRouteCommand";
 import frameworkMiddleware from '../languages';
 import { Route } from '../types';
 
-export default class ApiManagerWebviewProvider implements vscode.WebviewViewProvider {
+export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider {
 	private _view?: vscode.WebviewView
 
 	constructor(private context: vscode.ExtensionContext) { }
@@ -28,7 +28,7 @@ export default class ApiManagerWebviewProvider implements vscode.WebviewViewProv
 					openFileAtLine(message.file, message.line)
 					break
 				case "openSettings":
-					vscode.commands.executeCommand("workbench.action.openSettings", "apiMan")
+					vscode.commands.executeCommand("workbench.action.openSettings", "OctAPI")
 					break
 				case "vscodeFile":
 					vscode.commands.executeCommand('workbench.action.files.openFolder');

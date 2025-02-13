@@ -6,7 +6,7 @@ const Parser = require("tree-sitter")
 const Python = require("tree-sitter-python")
 
 export default async function extractDjangoRoutes() {
-    const config = vscode.workspace.getConfiguration("apiMan")
+    const config = vscode.workspace.getConfiguration("OctAPI")
     const routePath = config.get<string>("path", "./")
     const workspaceFolders = vscode.workspace.workspaceFolders
     if (!workspaceFolders) return []

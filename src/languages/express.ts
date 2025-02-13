@@ -7,7 +7,7 @@ import getFilesRecursively from "../utils/fileUtils"
 import { Route } from "../types"
 
 export default async function extractExpressRoutes() {
-    const config = vscode.workspace.getConfiguration("apiMan")
+    const config = vscode.workspace.getConfiguration("OctAPI")
     const routePath = config.get<string>("path", "./src/")
     // console.log(`Configured route path: ${routePath}`)
 
@@ -114,6 +114,6 @@ export default async function extractExpressRoutes() {
             },
         })
     }
-    // console.log(routesList)
+    console.log(routesList)
     return routesList
 }

@@ -7,7 +7,7 @@ import getFilesRecursively from "../utils/fileUtils";
 import { Route } from "../types";
 
 export default async function extractNestJSRoutes() {
-    const config = vscode.workspace.getConfiguration("apiMan");
+    const config = vscode.workspace.getConfiguration("OctAPI");
     const routePath = config.get<string>("path", "./src/");
     // console.log(`Configured route path: ${routePath}`)
 

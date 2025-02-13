@@ -7,11 +7,11 @@ import extractDjangoRoutes from "./django";
 
 const frameworks = [
     {
-        name: 'express',
+        name: 'Express',
         function: extractExpressRoutes
     },
     {
-        name: 'nestjs',
+        name: 'NestJS',
         function: extractNestJSRoutes
     },
     {
@@ -19,7 +19,7 @@ const frameworks = [
         function: extractFastifyRoutes
     },
     {
-        name: 'koa',
+        name: 'Koa',
         function: extractKoaRoutes
     },
     {
@@ -29,8 +29,8 @@ const frameworks = [
 ]
 
 export default function frameworkMiddleware() {
-    const config = vscode.workspace.getConfiguration("apiMan");
-    const frameworkName = config.get<string>("framework", "express");
+    const config = vscode.workspace.getConfiguration("OctAPI");
+    const frameworkName = config.get<string>("framework", "Express");
 
     const framework = frameworks.find(f => f.name === frameworkName);
 

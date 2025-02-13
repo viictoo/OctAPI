@@ -1,6 +1,6 @@
 # api-man README
 
-This is the README for your extension "api-man". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "octapi". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
