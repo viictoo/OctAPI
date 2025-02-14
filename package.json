@@ -1,16 +1,25 @@
 {
   "name": "octapi",
   "displayName": "OctAPI",
-  "description": "An api manager",
+  "description": "API Route Explorer for VS Code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.96.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hasbi-sabah/OctAPI"
+  },
   "categories": [
+    "Programming Languages",
+    "Visualization",
     "Other"
   ],
+  "icon": "resources/octapi_logo.png",
+  "publisher": "Hasbi Sabah",
   "activationEvents": [],
   "main": "./out/extension.js",
+  "author": "Hasbi Sabah",
   "contributes": {
     "commands": [
       {

@@ -3,9 +3,10 @@ import traverse from "@babel/traverse";
 import * as t from "@babel/types";
 import * as path from "path";
 import * as vscode from "vscode";
-import getFilesRecursively from "../utils/fileUtils";
 import { Route } from "../types";
+import { getFilesRecursively } from "../utils/fileUtils"
 
+// UNIMPLEMENTED
 export default async function extractFastifyRoutes() {
     return []
     // const config = vscode.workspace.getConfiguration("OctAPI");

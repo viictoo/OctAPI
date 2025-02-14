@@ -15,6 +15,7 @@ const frameworks = [
         function: extractNestJSRoutes
     },
     {
+        // UNIMPLEMENTED
         name: 'fastify',
         function: extractFastifyRoutes
     },
@@ -23,6 +24,7 @@ const frameworks = [
         function: extractKoaRoutes
     },
     {
+        // UNIMPLEMENTED
         name: 'django',
         function: extractDjangoRoutes
     }

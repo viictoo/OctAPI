@@ -1,10 +1,11 @@
 import * as path from "path"
 import * as vscode from "vscode"
 import { Route } from "../types"
-import getFilesRecursively from "../utils/fileUtils"
+import { getFilesRecursively } from "../utils/fileUtils"
 const Parser = require("tree-sitter")
 const Python = require("tree-sitter-python")
 
+// UNIMPLEMENTED
 export default async function extractDjangoRoutes() {
     const config = vscode.workspace.getConfiguration("OctAPI")
     const routePath = config.get<string>("path", "./")

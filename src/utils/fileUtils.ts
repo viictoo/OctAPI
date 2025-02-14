@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 
-export default async function getFilesRecursively(directoryUri: vscode.Uri): Promise<vscode.Uri[]> {
+export async function getFilesRecursively(directoryUri: vscode.Uri): Promise<vscode.Uri[]> {
     const fileUris: vscode.Uri[] = []
     const directoryUris: vscode.Uri[] = []
 
@@ -30,4 +30,15 @@ export default async function getFilesRecursively(directoryUri: vscode.Uri): Pro
     }
 
     return fileUris
+}
+
+export function openFileAtLine(file: string, line: number) {
+    const fileUri = vscode.Uri.file(file)
+    vscode.workspace.openTextDocument(fileUri).then((document) => {
+        vscode.window.showTextDocument(document).then((editor) => {
+            const range = new vscode.Range(line - 1, 0, line - 1, 0)
+            editor.selection = new vscode.Selection(range.start, range.end)
+            editor.revealRange(range)
+        })
+    })
 }
