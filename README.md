@@ -1,96 +1,96 @@
-<table style="vertical-align: middle;">
+<table style="border-collapse: collapse; vertical-align: middle;">
   <tr>
-    <td><img src="https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_logo.png" width="50"></td>
-    <td style="vertical-align: middle;"><h1 style="margin: 0;">OctAPI – API Route Explorer for VS Code</h1></td>
+    <td style="border: none;"><img src="https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_logo.png" width="50"></td>
+    <td style="border: none; vertical-align: middle;"><h1 style="margin: 0;">OctAPI – API Route Explorer for VS Code</h1></td>
   </tr>
 </table>
 
-### Effortlessly visualize and navigate your API routes – directly in VS Code.  
+**Effortlessly visualize and navigate your API routes – directly in VS Code.**
 
 ---
 
-## 🎬 Live Demo  
+## Features
 
-![OctAPI Demo](https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_demo.gif)  
+OctAPI provides a seamless way to explore and manage your API routes within Visual Studio Code. Here are its key features:
 
----
+- **Smart Route Detection** – Scans all files within a user-defined directory to identify API routes.
+- **Framework Support** – Works with Express, NestJS, and Koa, with Python frameworks coming soon.
+- **Jump to Code** – Clicking a route takes you directly to the exact line where it's defined.
+- **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
+- **Native Sidebar Integration** – View all detected routes directly in VS Code’s sidebar.
 
-## ⚡ Features  
+### Demo
 
-- **Automatic Route Detection** – Scans your codebase for API routes & methods.  
-- **Supports Express, NestJS & Koa** – Expanding soon!  
-- **Clickable Routes** – Instantly jump to the corresponding file.  
-- **Organized View** – Group routes by basepath or HTTP method.  
-- **Customizable Search** – Define search paths for precise scanning.  
-- **Seamless Sidebar Integration** – Stay in flow while coding.  
-
----
-
-## 📦 Installation  
-
-> **OctAPI is currently available as a `.vsix` package.**  
-> A **VS Code Marketplace release** is coming soon.  
-
-1. Download the latest `.vsix` from the [Releases](https://github.com/yourusername/octapi/releases) page.  
-2. Open VS Code and navigate to **Extensions** (`Ctrl+Shift+X`).  
-3. Click the `...` menu and select **Install from VSIX...**  
-4. Select the downloaded file and install it.  
-5. Reload VS Code if needed.  
+![OctAPI Demo](https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_demo.gif)
 
 ---
 
-## 🚀 How It Works  
+## Requirements
 
-1. Open your project in **VS Code**.  
-2. OctAPI scans your codebase for API routes.  
-3. Open the **OctAPI Sidebar** to view detected routes.  
-4. Click a route to jump directly to its source file.  
-5. Customize settings for search paths & grouping preferences.  
+- **Visual Studio Code**: Ensure you have VS Code installed.
+- **Supported Frameworks**: Currently supports Express.js, NestJS, and Koa. Python frameworks (Flask, FastAPI, Django) are coming soon.
 
 ---
 
-## ⚙️ Supported Frameworks  
+## Extension Settings
 
-✅ **Express.js**  
-✅ **NestJS**  
-✅ **Koa**  
+This extension contributes the following settings:
 
-🔜 **Upcoming:** Flask, FastAPI, Django (Python support in progress).  
-
----
-
-## 📌 Roadmap  
-
-- Enhanced framework detection & parsing.  
-- Python support: **Flask, FastAPI, Django**.  
-- UI improvements & customization options.  
-- Official **VS Code Marketplace release**.  
+- `octapi.path`: Define custom search paths for route detection.
+- `octapi.framework`: Set the framework for route detection.
 
 ---
 
-## 🤝 Contributing  
+## Installation
 
-Contributions are welcome!  
-
-1. **Fork** the repo.  
-2. Create a **feature branch** (`git checkout -b feature-name`).  
-3. Commit changes (`git commit -m "Describe feature"`).  
-4. Push to your branch (`git push origin feature-name`).  
-5. Open a **Pull Request**.  
+1. Download the latest `.vsix` package from the [Releases](https://github.com/Hasbi-sabah/OctAPI/releases) page.
+2. Open VS Code and navigate to **Extensions** (`Ctrl+Shift+X`).
+3. Click the `...` menu and select **Install from VSIX...**.
+4. Select the downloaded file and install it.
+5. Reload VS Code if needed.
 
 ---
 
-## 📝 License  
+## Known Issues
 
-Licensed under the **Apache 2.0 License**. See [LICENSE](LICENSE) for details.  
+- Python framework support is still in progress.
+- Large codebases may experience slower scanning times.
 
 ---
 
-## 📢 Contact  
+## Release Notes
 
-🐙 **Author:** Hasbi Sabah  
-📧 **Email:** sabahhasbi00@gmail.com  
-🐙 **GitHub:** [Hasbi-sabah](https://github.com/Hasbi-sabah)  
+### 0.0.1
+
+- Initial release of OctAPI.
+- Supports Express.js, NestJS, and Koa frameworks.
+- Automatic route detection and clickable routes.
+
+---
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repo.
+2. Create a **feature branch** (`git checkout -b feature-name`).
+3. Commit changes (`git commit -m "Describe feature"`).
+4. Push to your branch (`git push origin feature-name`).
+5. Open a **Pull Request**.
+
+---
+
+## License
+
+Licensed under the **Apache 2.0 License**. See [LICENSE](LICENSE) for details.
+
+---
+
+## Contact
+
+- **Author**: Hasbi Sabah
+- **Email**: sabahhasbi00@gmail.com
+- **GitHub**: [Hasbi-sabah](https://github.com/Hasbi-sabah)
 
 ---
 
