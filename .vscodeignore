@@ -11,3 +11,4 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 !resources/octapi_logo.png
 .keys.txt
+*.vsix
