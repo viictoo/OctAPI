@@ -2,7 +2,7 @@
   "name": "octapi",
   "displayName": "OctAPI",
   "description": "API Route Explorer for VS Code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -16,7 +16,7 @@
     "Other"
   ],
   "icon": "resources/octapi_logo.png",
-  "publisher": "Hasbi Sabah",
+  "publisher": "HasbiSabah",
   "activationEvents": [],
   "main": "./out/extension.js",
   "author": "Hasbi Sabah",
@@ -43,7 +43,7 @@
         {
           "id": "octapi",
           "title": "OctAPI",
-          "icon": "resources/logo2.svg"
+          "icon": "resources/logo.svg"
         }
       ]
     },
@@ -105,22 +105,17 @@
   },
   "devDependencies": {
     "@babel/parser": "^7.26.7",
-    "@babel/plugin-proposal-decorators": "^7.25.9",
     "@types/babel__parser": "^7.1.5",
     "@types/babel__traverse": "^7.20.6",
-    "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.96.0",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1",
     "eslint": "^9.19.0",
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@babel/traverse": "^7.26.7",
-    "tree-sitter": "^0.22.4",
-    "tree-sitter-python": "^0.23.6"
+    "@babel/traverse": "^7.26.7"
   }
 }

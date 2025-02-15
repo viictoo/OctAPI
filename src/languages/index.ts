@@ -1,9 +1,7 @@
 import extractExpressRoutes from "./express";
 import * as vscode from "vscode";
 import extractNestJSRoutes from "./nestjs";
-import extractFastifyRoutes from "./fastify";
 import extractKoaRoutes from "./koa";
-import extractDjangoRoutes from "./django";
 
 const frameworks = [
     {
@@ -15,18 +13,8 @@ const frameworks = [
         function: extractNestJSRoutes
     },
     {
-        // UNIMPLEMENTED
-        name: 'fastify',
-        function: extractFastifyRoutes
-    },
-    {
         name: 'Koa',
         function: extractKoaRoutes
-    },
-    {
-        // UNIMPLEMENTED
-        name: 'django',
-        function: extractDjangoRoutes
     }
 ]
 

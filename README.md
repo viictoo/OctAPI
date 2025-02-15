@@ -9,6 +9,12 @@
 
 ---
 
+### Demo
+
+![OctAPI Demo](https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_demo.gif)
+
+---
+
 ## Features
 
 OctAPI provides a seamless way to explore and manage your API routes within Visual Studio Code. Here are its key features:
@@ -18,10 +24,6 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 - **Jump to Code** – Clicking a route takes you directly to the exact line where it's defined.
 - **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
 - **Native Sidebar Integration** – View all detected routes directly in VS Code’s sidebar.
-
-### Demo
-
-![OctAPI Demo](https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_demo.gif)
 
 ---
 
@@ -43,6 +45,22 @@ This extension contributes the following settings:
 
 ## Installation
 
+You can install OctAPI from the following sources:
+
+### Microsoft Marketplace
+
+1. Visit the [OctAPI extension page on the Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=HasbiSabah.octapi).
+2. Click the **Install** button.
+3. Follow the prompts to install the extension in VS Code.
+
+### Open VSX
+
+1. Visit the [OctAPI extension page on Open VSX](https://open-vsx.org/extension/Hasbi-Sabah/octapi).
+2. Click the **Install** button.
+3. Follow the prompts to install the extension.
+
+### Manual Installation
+
 1. Download the latest `.vsix` package from the [Releases](https://github.com/Hasbi-sabah/OctAPI/releases) page.
 2. Open VS Code and navigate to **Extensions** (`Ctrl+Shift+X`).
 3. Click the `...` menu and select **Install from VSIX...**.
@@ -60,7 +78,13 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-### 0.0.1
+### v0.0.2
+
+- Removed extra files to streamline the project.
+- Cleaned up heavy, unused dependencies for a lighter extension.
+
+
+### v0.0.1
 
 - Initial release of OctAPI.
 - Supports Express.js, NestJS, and Koa frameworks.
