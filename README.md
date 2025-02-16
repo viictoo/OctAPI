@@ -1,3 +1,5 @@
+![OctAPI Banner](https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/banner.png)
+
 <table style="border-collapse: collapse; vertical-align: middle;">
   <tr>
     <td style="border: none;"><img src="https://raw.githubusercontent.com/Hasbi-sabah/OctAPI/master/resources/octapi_logo.png" width="50"></td>
