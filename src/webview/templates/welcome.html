@@ -64,6 +64,15 @@
             outline: none;
             box-shadow: 0 0 0 2px var(--vscode-focusBorder);
         }
+        .feedback-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: var(--vscode-textLink-foreground);
+            text-decoration: none;
+        }
+        .feedback-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -76,6 +85,7 @@
             <button onclick="openSettings()" class="button">Open Settings</button>
         </div>
         <p class="info">We're continuously working on expanding support for more languages and frameworks. Stay tuned for updates!</p>
+        <a href="https://forms.gle/4BuPRUAzjA2JBpjd8" class="feedback-link" target="_blank">Bug or Feedback?</a>
     </div>
     <script>
         const vscode = acquireVsCodeApi();

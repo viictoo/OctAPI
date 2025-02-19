@@ -24,8 +24,16 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 - **Smart Route Detection** – Scans all files within a user-defined directory to identify API routes.
 - **Framework Support** – Works with Express, NestJS, and Koa, with Python frameworks coming soon.
 - **Jump to Code** – Clicking a route takes you directly to the exact line where it's defined.
+- **Quick Copy** – Hover over a route to reveal a copy button for quick copying.
 - **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
 - **Native Sidebar Integration** – View all detected routes directly in VS Code’s sidebar.
+
+---
+
+## 🛠 Report Issues & Give Feedback
+
+Have a suggestion or found a bug? Let us know!  
+👉 [Submit feedback here](https://forms.gle/4BuPRUAzjA2JBpjd8)  
 
 ---
 
@@ -80,11 +88,17 @@ You can install OctAPI from the following sources:
 
 ## Release Notes
 
+### v0.0.3
+
+- Added a **copy button** on hover for quick route copying.
+- Added a **feedback link** for reporting bugs and suggestions.
+- Fixed a **file watching bug** where route updates were triggered incorrectly outside the specified paths.
+- Removed **unnecessary console logs**.
+
 ### v0.0.2
 
 - Removed extra files to streamline the project.
 - Cleaned up heavy, unused dependencies for a lighter extension.
-
 
 ### v0.0.1
 

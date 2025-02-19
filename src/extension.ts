@@ -27,6 +27,19 @@ export function activate(context: vscode.ExtensionContext) {
 	const openRouteInFile = vscode.commands.registerCommand("octapi.openRouteInFile", (file: string, line: number) => openFileAtLine(file, line));
 	context.subscriptions.push(openRouteInFile)
 
+	// Command to copy a route path to the clipboard
+	const copyRoutePath = vscode.commands.registerCommand("octapi.copyRoute", (path: string) => {
+		vscode.env.clipboard.writeText(path)
+	})
+	context.subscriptions.push(copyRoutePath)
+
+	// Command to open feedback form
+	const openFeedbackForm = vscode.commands.registerCommand("octapi.feedback", () => {
+		const feedbackFormUrl = "https://forms.gle/5bimyt7Y1UAJvEB39"
+		vscode.env.openExternal(vscode.Uri.parse(feedbackFormUrl))
+	})
+	context.subscriptions.push(openFeedbackForm)
+
 	// Listen for configuration changes and refresh the webview if needed
 	vscode.workspace.onDidChangeConfiguration((event) => {
 		if (event.affectsConfiguration("OctAPI.path") || event.affectsConfiguration("OctAPI.framework")) {
@@ -43,24 +56,18 @@ export function activate(context: vscode.ExtensionContext) {
 		console.error("No path configured for OctAPI.path");
 	} else {
 		const absolutePath = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, routePath).fsPath;
-	
-		const watcher = vscode.workspace.createFileSystemWatcher(`${absolutePath}/**/*`);
 		const updateView = (uri: vscode.Uri) => {
 			provider.updateWebview();
 		};
 	
-		watcher.onDidChange(updateView);
-		watcher.onDidCreate(updateView);
-		watcher.onDidDelete(updateView);
-		context.subscriptions.push(watcher);
-	
-		// Fallback: Trigger update on file save
-		vscode.workspace.onDidSaveTextDocument((doc) => updateView(doc.uri));
+		vscode.workspace.onDidSaveTextDocument((doc) => {
+			if (doc.uri.fsPath.startsWith(absolutePath)) {
+				updateView(doc.uri);
+			}
+		});
 	}
-	
+
 }
-
-
 
 // This method is called when your extension is deactivated
 export function deactivate() { }

@@ -67,10 +67,10 @@ export default async function extractKoaRoutes() {
                         // Adding the detected route to the list
                         routesList.push({
                             method,
-                            path: routePathValue, // Full path including basePath
+                            path: routePathValue, 
                             file: filePath,
                             fileLine: path.node.loc?.start.line || 0,
-                            basePath: routerPrefix || '', // Ensure basePath is set properly
+                            basePath: routerPrefix || '', 
                         });
                     }
                 },
@@ -79,6 +79,6 @@ export default async function extractKoaRoutes() {
             return []
         }
     }
-    console.log(routesList); // You can comment this out once you're confident it's working
+    // console.log(routesList); 
     return routesList;
 }

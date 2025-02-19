@@ -61,7 +61,6 @@ export default async function extractExpressRoutes() {
                     // Case 1: Track `app.use('/basepath', router)`
                     if (
                         t.isMemberExpression(node.callee) &&
-                        // t.isIdentifier(node.callee.object, { name: 'app' }) &&
                         t.isIdentifier(node.callee.property, { name: "use" }) &&
                         node.arguments.length >= 2 &&
                         t.isStringLiteral(node.arguments[0]) &&
@@ -94,7 +93,7 @@ export default async function extractExpressRoutes() {
                     if (
                         t.isMemberExpression(node.callee) &&
                         t.isIdentifier(node.callee.object) &&
-                        routerVariables.has(node.callee.object.name) && // Ensure it's a known Router variable
+                        routerVariables.has(node.callee.object.name) && 
                         t.isIdentifier(node.callee.property) &&
                         ["get", "post", "put", "delete", "patch"].includes(node.callee.property.name)
                     ) {
@@ -118,6 +117,6 @@ export default async function extractExpressRoutes() {
             return []
         }
     }
-    console.log(routesList)
+    // console.log(routesList)
     return routesList
 }

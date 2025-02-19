@@ -34,6 +34,9 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                 case "vscodeFile":
                     vscode.commands.executeCommand('workbench.action.files.openFolder');
                     break
+                case 'copyRoute':
+                    vscode.commands.executeCommand('octapi.copyRoute', message.route);
+                    break;
             }
         })
     }

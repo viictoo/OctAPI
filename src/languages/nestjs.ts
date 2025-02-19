@@ -111,7 +111,7 @@ export default async function extractNestJSRoutes() {
                                     routesList.push({
                                         method,
                                         path: pathValue,
-                                        basePath: basePath, // Use the controller's base path
+                                        basePath: basePath, 
                                         file: filePath,
                                         fileLine: decorator.loc?.start.line || 0,
                                     });
@@ -126,6 +126,6 @@ export default async function extractNestJSRoutes() {
         }
     }
 
-    console.log(routesList);
+    // console.log(routesList);
     return routesList;
 }

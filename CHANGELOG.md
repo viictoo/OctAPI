@@ -2,6 +2,17 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.0.3] - 2025-02-19
+### Added
+- **Copy route feature**: A copy button now appears when hovering over a route.
+- **Feedback links**: Added links to a Google Form for reporting bugs and giving feedback.
+
+### Fixed
+- **File watching bug**: Route updates were previously triggered by file changes anywhere in the workspace. Now, only changes within the user-specified folder correctly trigger updates.
+
+### Removed
+- Unnecessary console logs for a cleaner development experience.
+
 ## [0.0.2] - 2025-02-15
 ### Changed
 - Removed extra files to streamline the project.
