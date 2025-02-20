@@ -2,7 +2,7 @@
   "name": "octapi",
   "displayName": "OctAPI",
   "description": "API Route Explorer for VS Code",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -21,6 +21,7 @@
     "express",
     "nestjs",
     "koa",
+    "flask",
     "vscode",
     "development"
   ],
@@ -56,7 +57,7 @@
         "icon": "$(copy)",
         "title": "Copy Route"
       }
-      ],
+    ],
     "viewsContainers": {
       "activitybar": [
         {
@@ -111,7 +112,8 @@
           "enum": [
             "Express",
             "NestJS",
-            "Koa"
+            "Koa",
+            "Flask"
           ],
           "order": 2
         }
@@ -140,6 +142,8 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@babel/traverse": "^7.26.7"
+    "@babel/traverse": "^7.26.7",
+    "tree-sitter": "^0.22.4",
+    "tree-sitter-python": "^0.23.6"
   }
 }

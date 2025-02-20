@@ -2,6 +2,7 @@ import extractExpressRoutes from "./express";
 import * as vscode from "vscode";
 import extractNestJSRoutes from "./nestjs";
 import extractKoaRoutes from "./koa";
+import extractFlaskRoutes from "./flask";
 
 const frameworks = [
     {
@@ -15,6 +16,10 @@ const frameworks = [
     {
         name: 'Koa',
         function: extractKoaRoutes
+    },
+    {
+        name: 'Flask',
+        function: extractFlaskRoutes
     }
 ]
 

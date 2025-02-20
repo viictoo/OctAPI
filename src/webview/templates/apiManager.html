@@ -223,7 +223,7 @@
     <div class="controls">
         <span class="group-text">
             Group by:
-            <button onclick="handleGrouping('basePath', this)">Basepath</button>
+            <button id="basePathButton" onclick="handleGrouping('basePath', this)">Basepath</button>
             <button onclick="handleGrouping('method', this)">Method</button>
         </span>
         <span class="fold-controls" id="foldControls" style="display: none;">
@@ -249,6 +249,14 @@
     <ul id="routesList"></ul>
 
     <script>
+        function showGroupingButtons() {
+            const basePaths = new Set(routes.map(route => route.basePath));
+            if (basePaths.size > 1) {
+                document.getElementById('basePathButton').style.display = 'inline';
+            } else {
+                document.getElementById('basePathButton').style.display = 'none';
+            }
+        }
         function copyRoute(route) {
             vscode.postMessage({
                 command: 'copyRoute',
@@ -323,19 +331,24 @@
             const description = pathComponents.slice(-2).join('/');
             const methodClass = `method-${route.method.toLowerCase()}`;
 
+            // Escape < and > characters in the path
+            const escapedFullPath = fullPath.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const escapedBasePath = route.basePath.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const escapedPath = route.path.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
             return `
-            <li class="route-item" onclick="openRoute('${route.file}', ${route.fileLine})">
-                <span class="method ${methodClass}">
-                    ${methodIcon}
-                    ${route.method}
-                </span>
-                <span class="path" title="${fullPath}">${fullPath}</span>
-                <span class="description" title="${description}">- ${description}</span>
-                <button class="copy-button" onclick="event.stopPropagation(); copyRoute('${route.basePath}${route.path}')">
-                    Copy
-                </button>
-            </li>
-            `;
+                <li class="route-item" onclick="openRoute('${route.file}', ${route.fileLine})">
+                    <span class="method ${methodClass}">
+                        ${methodIcon}
+                        ${route.method}
+                    </span>
+                    <span class="path" title="${escapedFullPath}">${escapedFullPath}</span>
+                    <span class="description" title="${description}">- ${description}</span>
+                    <button class="copy-button" onclick="event.stopPropagation(); copyRoute('${escapedBasePath}${escapedPath}')">
+                        Copy
+                    </button>
+                </li>
+                `;
         }
 
         function changeGrouping(value) {
@@ -397,6 +410,7 @@
 
         // Initial render
         renderRoutes();
+        showGroupingButtons();
     </script>
 
 </body>

@@ -22,7 +22,7 @@
 OctAPI provides a seamless way to explore and manage your API routes within Visual Studio Code. Here are its key features:
 
 - **Smart Route Detection** – Scans all files within a user-defined directory to identify API routes.
-- **Framework Support** – Works with Express, NestJS, and Koa, with Python frameworks coming soon.
+- **Framework Support** – Works with Express, NestJS, Koa, and Flask.
 - **Jump to Code** – Clicking a route takes you directly to the exact line where it's defined.
 - **Quick Copy** – Hover over a route to reveal a copy button for quick copying.
 - **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
@@ -40,7 +40,7 @@ Have a suggestion or found a bug? Let us know!
 ## Requirements
 
 - **Visual Studio Code**: Ensure you have VS Code installed.
-- **Supported Frameworks**: Currently supports Express.js, NestJS, and Koa. Python frameworks (Flask, FastAPI, Django) are coming soon.
+- **Supported Frameworks**: Currently supports Express.js, NestJS, Koa, and Flask.
 
 ---
 
@@ -81,12 +81,17 @@ You can install OctAPI from the following sources:
 
 ## Known Issues
 
-- Python framework support is still in progress.
+- More Python framework support is still in progress.
 - Large codebases may experience slower scanning times.
 
 ---
 
 ## Release Notes
+
+### v0.1.0
+
+- Added **Flask support** for automatic route detection, including both decorator-based and class-based routes.
+- The **Group by Basepath** button now only appears when multiple basepaths exist.
 
 ### v0.0.3
 

@@ -2,6 +2,13 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.1.0] - 2025-02-20
+### Added
+- **Flask support**: Now detects API routes for Flask, including both decorator-based and class-based routes.
+
+### Fixed
+- **Smarter grouping toggle**: The "Group by Basepath" button now only appears when multiple basepaths exist.
+
 ## [0.0.3] - 2025-02-19
 ### Added
 - **Copy route feature**: A copy button now appears when hovering over a route.
