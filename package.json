@@ -2,7 +2,7 @@
   "name": "octapi",
   "displayName": "OctAPI",
   "description": "API Route Explorer for VS Code",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -22,6 +22,7 @@
     "nestjs",
     "koa",
     "flask",
+    "fastapi",
     "vscode",
     "development"
   ],
@@ -29,7 +30,7 @@
   "publisher": "HasbiSabah",
   "activationEvents": [],
   "main": "./out/extension.js",
-  "author": "Hasbi Sabah",
+  "author": "HasbiSabah",
   "contributes": {
     "commands": [
       {
@@ -113,9 +114,16 @@
             "Express",
             "NestJS",
             "Koa",
-            "Flask"
+            "Flask",
+            "FastAPI"
           ],
           "order": 2
+        },
+        "OctAPI.urlPrefix": {
+          "type": "string",
+          "default": "",
+          "description": "Add a custom prefix to your copied paths, like http://localhost:3000/api",
+          "order": 3
         }
       }
     }

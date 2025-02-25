@@ -22,10 +22,11 @@
 OctAPI provides a seamless way to explore and manage your API routes within Visual Studio Code. Here are its key features:
 
 - **Smart Route Detection** – Scans all files within a user-defined directory to identify API routes.
-- **Framework Support** – Works with Express, NestJS, Koa, and Flask.
+- **Framework Support** – Works with Express, NestJS, Koa, Flask, and FastAPI.
 - **Jump to Code** – Clicking a route takes you directly to the exact line where it's defined.
-- **Quick Copy** – Hover over a route to reveal a copy button for quick copying.
+- **Quick Copy with Prefixing** – Hover over a route to reveal a copy button, with an option to specify a route prefix.
 - **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
+- **Visual Enhancements** – Routes include distinct icons and colors, including special styling for `PATCH` routes.
 - **Native Sidebar Integration** – View all detected routes directly in VS Code’s sidebar.
 
 ---
@@ -40,7 +41,7 @@ Have a suggestion or found a bug? Let us know!
 ## Requirements
 
 - **Visual Studio Code**: Ensure you have VS Code installed.
-- **Supported Frameworks**: Currently supports Express.js, NestJS, Koa, and Flask.
+- **Supported Frameworks**: Express.js, NestJS, Koa, Flask, and FastAPI.
 
 ---
 
@@ -50,6 +51,7 @@ This extension contributes the following settings:
 
 - `octapi.path`: Define custom search paths for route detection.
 - `octapi.framework`: Set the framework for route detection.
+- `octapi.urlPrefix`: Specify a prefix to prepend when copying routes.
 
 ---
 
@@ -81,12 +83,18 @@ You can install OctAPI from the following sources:
 
 ## Known Issues
 
-- More Python framework support is still in progress.
+- More language support is still in progress.
 - Large codebases may experience slower scanning times.
 
 ---
 
 ## Release Notes
+
+### v0.2.0
+
+- Added **FastAPI support**.
+- Introduced **custom route prefixing** when copying routes.
+- Added **distinct icon and color** for PATCH routes.
 
 ### v0.1.0
 

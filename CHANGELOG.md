@@ -2,6 +2,12 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.2.0] - 2025-02-25
+### Added
+- **FastAPI support**: Now detects API routes for FastAPI, making OctAPI more versatile for Python developers.
+- **Custom route prefixing**: Users can now specify a route prefix when copying routes.
+- **Distinct icon and color for PATCH routes**: PATCH routes now have unique color and icon for better visual distinction.
+
 ## [0.1.0] - 2025-02-20
 ### Added
 - **Flask support**: Now detects API routes for Flask, including both decorator-based and class-based routes.

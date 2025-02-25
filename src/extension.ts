@@ -29,9 +29,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Command to copy a route path to the clipboard
 	const copyRoutePath = vscode.commands.registerCommand("octapi.copyRoute", (path: string) => {
-		vscode.env.clipboard.writeText(path)
-	})
-	context.subscriptions.push(copyRoutePath)
+		const config = vscode.workspace.getConfiguration("OctAPI");
+		let urlPrefix = config.get<string>("urlPrefix", "");
+		urlPrefix = urlPrefix.replace(/\/+$/, ""); // Remove trailing slashes
+		vscode.env.clipboard.writeText(`${urlPrefix}${path}`);
+	});
+	context.subscriptions.push(copyRoutePath);
 
 	// Command to open feedback form
 	const openFeedbackForm = vscode.commands.registerCommand("octapi.feedback", () => {

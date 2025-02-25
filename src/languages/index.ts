@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import extractNestJSRoutes from "./nestjs";
 import extractKoaRoutes from "./koa";
 import extractFlaskRoutes from "./flask";
+import extractFastAPIRoutes from "./fastapi";
 
 const frameworks = [
     {
@@ -20,6 +21,10 @@ const frameworks = [
     {
         name: 'Flask',
         function: extractFlaskRoutes
+    },
+    {
+        name: 'FastAPI',
+        function: extractFastAPIRoutes
     }
 ]
 

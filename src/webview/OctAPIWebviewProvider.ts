@@ -72,13 +72,14 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                         .method-post { color: var(--post-color, #49cc90); }
                         .method-put { color: var(--put-color, #fca130); }
                         .method-delete { color: var(--delete-color, #f93e3e); }
+                        .method-patch { color: var(--patch-color, #a855f7); } 
                         .method-other { color: var(--other-color, #50e3c2); }
                     \`;
                     document.head.appendChild(style);
                 </script>
                 </head>`,
-            )
-        }
+            );
+        }        
     }
 
     // Update the getHtmlContent method to include the new SVG icon logic
