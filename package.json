@@ -44,19 +44,9 @@
         "title": "Change Settings"
       },
       {
-        "command": "octapi.openRouteInFile",
-        "icon": "$(file-code)",
-        "title": "Open Route In File"
-      },
-      {
         "command": "octapi.feedback",
         "icon": "$(bug)",
         "title": "Open Feedback Form"
-      },
-      {
-        "command": "octapi.copyRoute",
-        "icon": "$(copy)",
-        "title": "Copy Route"
       }
     ],
     "viewsContainers": {

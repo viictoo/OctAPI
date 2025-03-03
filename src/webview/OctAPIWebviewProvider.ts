@@ -35,7 +35,10 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                     vscode.commands.executeCommand('workbench.action.files.openFolder');
                     break
                 case 'copyRoute':
-                    vscode.commands.executeCommand('octapi.copyRoute', message.route);
+                    const config = vscode.workspace.getConfiguration("OctAPI");
+                    let urlPrefix = config.get<string>("urlPrefix", "");
+                    urlPrefix = urlPrefix.replace(/\/+$/, ""); // Remove trailing slashes
+                    vscode.env.clipboard.writeText(`${urlPrefix}${message.route}`);
                     break;
             }
         })
@@ -79,7 +82,7 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                 </script>
                 </head>`,
             );
-        }        
+        }
     }
 
     // Update the getHtmlContent method to include the new SVG icon logic

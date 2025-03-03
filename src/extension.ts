@@ -23,19 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
 	})
 	context.subscriptions.push(openSettings)
 
-	// Command to open a route in its source file at the specified line
-	const openRouteInFile = vscode.commands.registerCommand("octapi.openRouteInFile", (file: string, line: number) => openFileAtLine(file, line));
-	context.subscriptions.push(openRouteInFile)
-
-	// Command to copy a route path to the clipboard
-	const copyRoutePath = vscode.commands.registerCommand("octapi.copyRoute", (path: string) => {
-		const config = vscode.workspace.getConfiguration("OctAPI");
-		let urlPrefix = config.get<string>("urlPrefix", "");
-		urlPrefix = urlPrefix.replace(/\/+$/, ""); // Remove trailing slashes
-		vscode.env.clipboard.writeText(`${urlPrefix}${path}`);
-	});
-	context.subscriptions.push(copyRoutePath);
-
 	// Command to open feedback form
 	const openFeedbackForm = vscode.commands.registerCommand("octapi.feedback", () => {
 		const feedbackFormUrl = "https://forms.gle/5bimyt7Y1UAJvEB39"
