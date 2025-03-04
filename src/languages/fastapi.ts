@@ -22,7 +22,6 @@ export default async function extractFastAPIRoutes(): Promise<Route[]> {
     return processFiles(pyFiles, parser);
 }
 
-// Shared utility functions remain the same
 async function getPythonFiles(directoryUri: vscode.Uri): Promise<vscode.Uri[]> {
     const fileUris = await getFilesRecursively(directoryUri);
     return fileUris.filter(uri => uri.fsPath.endsWith(".py"));
@@ -47,18 +46,30 @@ async function processFiles(pyFiles: vscode.Uri[], parser: Parser): Promise<Rout
 }
 
 function processTree(tree: Parser.Tree, filePath: string, routesList: Route[]): void {
-    function traverse(node: Parser.SyntaxNode, basePath = "") {
+    // Track router prefixes
+    const routerPrefixes: Map<string, string> = new Map();
+
+    function traverse(node: Parser.SyntaxNode) {
+        // Check for APIRouter instantiation to capture prefixes
+        if (node.type === "assignment" && node.text.includes("APIRouter(")) {
+            const variableName = node.childForFieldName("left")?.text;
+            const prefixMatch = node.text.match(/prefix\s*=\s*["']([^"']+)["']/);
+            if (variableName && prefixMatch) {
+                routerPrefixes.set(variableName, prefixMatch[1]);
+            }
+        }
+
         if (node.type === "decorated_definition") {
             const classDef = node.children.find(c => c.type === "class_definition");
             const functionDef = node.children.find(c => c.type === "function_definition");
             
             if (classDef) {
-                processClassDefinition(node, basePath, filePath, routesList);
+                processClassDefinition(node, "", filePath, routesList, routerPrefixes);
             } else if (functionDef) {
-                processFastAPIRoute(node, basePath, filePath, routesList);
+                processFastAPIRoute(node, "", filePath, routesList, routerPrefixes);
             }
         }
-        node.children.forEach(child => traverse(child, basePath));
+        node.children.forEach(child => traverse(child));
     }
 
     traverse(tree.rootNode);
@@ -68,7 +79,8 @@ function processClassDefinition(
     node: Parser.SyntaxNode,
     basePath: string,
     filePath: string,
-    routesList: Route[]
+    routesList: Route[],
+    routerPrefixes: Map<string, string>
 ): void {
     const classDef = node.children.find(c => c.type === "class_definition");
     if (!classDef) return;
@@ -79,10 +91,10 @@ function processClassDefinition(
 
     classBody?.children.forEach(methodNode => {
         if (methodNode.type === "function_definition") {
-            processClassMethod(methodNode, classBasePath, className, filePath, routesList);
+            processClassMethod(methodNode, classBasePath, className, filePath, routesList, routerPrefixes);
         } else if (methodNode.type === "decorated_definition") {
             const funcDef = methodNode.children.find(c => c.type === "function_definition");
-            if (funcDef) processClassMethod(funcDef, classBasePath, className, filePath, routesList);
+            if (funcDef) processClassMethod(funcDef, classBasePath, className, filePath, routesList, routerPrefixes);
         }
     });
 }
@@ -91,7 +103,8 @@ function processFastAPIRoute(
     node: Parser.SyntaxNode,
     basePath: string,
     filePath: string,
-    routesList: Route[]
+    routesList: Route[],
+    routerPrefixes: Map<string, string>
 ): void {
     const decorators = node.children.filter(c => c.type === "decorator");
     const functionDef = node.children.find(c => c.type === "function_definition");
@@ -101,7 +114,17 @@ function processFastAPIRoute(
         if (!decoratorCall) return;
 
         const [decoratorName, pathArg] = parseDecoratorCall(decoratorCall);
-        const fullPath = pathArg ? path.join(basePath, pathArg).replace(/\\/g, "/") : basePath;
+        
+        // Check for router reference with prefix
+        const routerMatch = decoratorCall.match(/(\w+)\.(get|post|put|delete|patch|head|options|api_route)/);
+        let routerPrefix = "";
+        if (routerMatch && routerPrefixes.has(routerMatch[1])) {
+            routerPrefix = routerPrefixes.get(routerMatch[1])!;
+        }
+
+        const fullPath = pathArg 
+            ? path.join(routerPrefix, basePath, pathArg).replace(/\\/g, "/").replace(/\/+/g, "/")
+            : path.join(routerPrefix, basePath).replace(/\\/g, "/").replace(/\/+/g, "/");
 
         // Handle both direct methods and api_route
         if (decoratorName.endsWith(".api_route")) {
@@ -116,45 +139,54 @@ function processFastAPIRoute(
     });
 }
 
-// Modified method processing for FastAPI conventions
 function processClassMethod(
     methodNode: Parser.SyntaxNode,
     classBasePath: string,
     className: string,
     filePath: string,
-    routesList: Route[]
+    routesList: Route[],
+    routerPrefixes: Map<string, string>
 ): void {
     const methodNameNode = methodNode.childForFieldName("name");
     if (!methodNameNode) return;
 
-    // Check for both method name and decorators
     const methodName = methodNameNode.text.toUpperCase();
     let methods = VALID_METHODS.has(methodName) ? [methodName] : [];
 
-    // Check for decorators on the method
     const decorators = methodNode.children.filter(c => c.type === "decorator");
     decorators.forEach(decorator => {
         const decoratorCall = decorator.children[1]?.text;
         if (!decoratorCall) return;
 
         const [decoratorName] = parseDecoratorCall(decoratorCall);
+        
+        // Check for router reference with prefix
+        const routerMatch = decoratorCall.match(/(\w+)\.(get|post|put|delete|patch|head|options|api_route)/);
+        let routerPrefix = "";
+        if (routerMatch && routerPrefixes.has(routerMatch[1])) {
+            routerPrefix = routerPrefixes.get(routerMatch[1])!;
+        }
+
         if (VALID_METHODS.has(decoratorName.split(".").pop()?.toUpperCase() || "")) {
             methods.push(decoratorName.split(".").pop()!.toUpperCase());
         }
-    });
 
-    methods.forEach(method => {
-        routesList.push({
-            method,
-            path: classBasePath,
-            basePath: "",
-            file: filePath,
-            fileLine: methodNode.startPosition.row + 1
+        const fullPath = path.join(routerPrefix, classBasePath)
+            .replace(/\\/g, "/")
+            .replace(/\/+/g, "/");
+
+        methods.forEach(method => {
+            routesList.push({
+                method,
+                path: fullPath,
+                basePath: "",
+                file: filePath,
+                fileLine: methodNode.startPosition.row + 1
+            });
         });
     });
 }
 
-// The following utility functions remain similar to Flask version
 function getDecoratedPath(decorators: Parser.SyntaxNode[], basePath: string): string {
     return decorators.reduce((currentPath, decorator) => {
         const decoratorCall = decorator.children[1]?.text;
