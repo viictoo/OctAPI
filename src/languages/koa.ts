@@ -24,7 +24,7 @@ export default async function extractKoaRoutes() {
     const jsFileUris = fileUris.filter((uri) => uri.fsPath.endsWith('.js') || uri.fsPath.endsWith('.ts'));
 
     const routesList: Route[] = [];
-    const routerPrefixes = new Map<string, string>(); // Stores router variables and their prefixes
+    const routerPrefixes = new Map<string, string>();
 
     for (const fileUri of jsFileUris) {
         const document = await vscode.workspace.openTextDocument(fileUri);
@@ -35,8 +35,49 @@ export default async function extractKoaRoutes() {
             const filePath = fileUri.fsPath;
 
             traverse(ast, {
-                // Detect prefix setting (router.prefix('/base'))
                 CallExpression(path) {
+                    // Improved route method detection
+                    if (
+                        t.isMemberExpression(path.node.callee) &&
+                        t.isIdentifier(path.node.callee.object) &&
+                        t.isIdentifier(path.node.callee.property) &&
+                        ['get', 'post', 'put', 'delete', 'patch'].includes(path.node.callee.property.name)
+                    ) {
+                        // Check if the first argument is a string (route path)
+                        const firstArg = path.node.arguments[0];
+                        if (t.isStringLiteral(firstArg)) {
+                            // Check if the method is chained on a likely router-like method
+                            const parentPath = path.parentPath;
+                            const isLikelyRouterMethod = (
+                                // Check for method chaining or direct router method
+                                (t.isCallExpression(parentPath.node) && 
+                                 t.isMemberExpression(parentPath.node.callee) && 
+                                 t.isIdentifier(parentPath.node.callee.property) &&
+                                 ['use', 'routes', 'allowedMethods'].includes(parentPath.node.callee.property.name)) ||
+                                (t.isVariableDeclarator(parentPath.node) && 
+                                 t.isIdentifier(parentPath.node.id)) ||
+                                (t.isAssignmentExpression(parentPath.node))
+                            );
+
+                            if (isLikelyRouterMethod) {
+                                const method = path.node.callee.property.name.toUpperCase();
+                                const routePathValue = firstArg.value;
+                                const routerVarName = path.node.callee.object.name;
+                                const routerPrefix = routerPrefixes.get(routerVarName) || '';
+
+                                // Adding the detected route to the list
+                                routesList.push({
+                                    method,
+                                    path: routePathValue, 
+                                    file: filePath,
+                                    fileLine: path.node.loc?.start.line || 0,
+                                    basePath: routerPrefix || '', 
+                                });
+                            }
+                        }
+                    }
+
+                    // Prefix detection remains the same
                     if (
                         t.isMemberExpression(path.node.callee) &&
                         t.isIdentifier(path.node.callee.object) &&
@@ -45,40 +86,15 @@ export default async function extractKoaRoutes() {
                     ) {
                         const routerVarName = path.node.callee.object.name;
                         const prefixValue = path.node.arguments[0].value;
-                        if (routerPrefixes.has(routerVarName)) {
-                            routerPrefixes.set(routerVarName, prefixValue);
-                        } else {
-                            routerPrefixes.set(routerVarName, prefixValue); // Initialize with prefix if not already set
-                        }
-                    }
-
-                    // Detecting route methods (get, post, etc.)
-                    if (
-                        t.isMemberExpression(path.node.callee) &&
-                        t.isIdentifier(path.node.callee.object) && // Checking if it's a router method (e.g., router.post)
-                        t.isIdentifier(path.node.callee.property) && // Ensure property is an identifier
-                        ['get', 'post', 'put', 'delete', 'patch'].includes(path.node.callee.property.name) // HTTP methods
-                    ) {
-                        const method = path.node.callee.property.name.toUpperCase();
-                        const routePathValue = t.isStringLiteral(path.node.arguments[0]) ? path.node.arguments[0].value : '';
-                        const routerVarName = path.node.callee.object.name;
-                        const routerPrefix = routerPrefixes.get(routerVarName) || '';
-
-                        // Adding the detected route to the list
-                        routesList.push({
-                            method,
-                            path: routePathValue, 
-                            file: filePath,
-                            fileLine: path.node.loc?.start.line || 0,
-                            basePath: routerPrefix || '', 
-                        });
+                        routerPrefixes.set(routerVarName, prefixValue);
                     }
                 },
             });
         } catch (error) {
-            return []
+            console.error('Error parsing file:', fileUri.fsPath, error);
+            return [];
         }
     }
-    // console.log(routesList); 
+    
     return routesList;
 }
