@@ -4,4 +4,6 @@ export interface Route {
     basePath: string
     file: string
     fileLine: number
+    routeId?: string
+    isStarred?: boolean
 }

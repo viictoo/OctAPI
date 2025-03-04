@@ -8,8 +8,26 @@ import { Route } from '../types';
 export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView
     private updateCounter = 0 // Counter to track the latest update call
+    private starredRoutes: Set<string>
 
-    constructor(private context: vscode.ExtensionContext) { }
+    constructor(private context: vscode.ExtensionContext) {
+        // Initialize starred routes from persistent storage
+        const stored = context.globalState.get<string[]>('starredRoutes') || []
+        this.starredRoutes = new Set(stored)
+    }
+
+    private persistStarredRoutes() {
+        this.context.globalState.update('starredRoutes', Array.from(this.starredRoutes))
+    }
+
+    private toggleRouteStar(routeId: string) {
+        if (this.starredRoutes.has(routeId)) {
+            this.starredRoutes.delete(routeId)
+        } else {
+            this.starredRoutes.add(routeId)
+        }
+        this.persistStarredRoutes()
+    }
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         this._view = webviewView
@@ -40,6 +58,15 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                     urlPrefix = urlPrefix.replace(/\/+$/, ""); // Remove trailing slashes
                     vscode.env.clipboard.writeText(`${urlPrefix}${message.route}`);
                     break;
+                case 'toggleFavorite':
+                    this.toggleRouteStar(message.routeId)
+                    // Send updated state back to webview
+                    this._view?.webview.postMessage({
+                        command: 'updateFavorite',
+                        routeId: message.routeId,
+                        isStarred: this.starredRoutes.has(message.routeId)
+                    })
+                    break
             }
         })
     }
@@ -49,6 +76,10 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
         const currentUpdate = ++this.updateCounter // Increment the counter for the current update
         if (this._view) this._view.webview.html = this.getLoading()
         const routes = await frameworkMiddleware()
+
+
+        // Pass enhanced routes to the view
+        // const html = this.getHtmlContent(processedRoutes)
         if (currentUpdate !== this.updateCounter) {
             // If the current update is not the latest, ignore the result
             return
@@ -61,7 +92,14 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
             }
             return
         }
-        const html = this.getHtmlContent(routes)
+        // Add starred status to routes
+        const processedRoutes = routes.map(route => ({
+            ...route,
+            routeId: `${route.method}-${route.path}-${route.file}`, // Unique ID
+            isStarred: this.starredRoutes.has(`${route.method}-${route.path}-${route.file}`)
+        }))
+
+        const html = this.getHtmlContent(processedRoutes)
         if (this._view) {
             // Inject the VS Code API script and our custom styles
             this._view.webview.html = html.replace(

@@ -99,6 +99,7 @@
 
         .group-header .arrow {
             margin-right: 8px;
+            fill: var(--text-color);
             transition: transform 0.2s ease;
         }
 
@@ -191,7 +192,7 @@
             top: 50%;
             transform: translateY(-50%);
             background-color: rgba(var(--vscode-button-background-rgb), 0.1);
-            color: var(--vscode-editor-foreground);
+            fill: var(--text-color);
             border: 1px solid rgba(var(--vscode-button-border-rgb), 0.3);
             padding: 4px 8px;
             cursor: pointer;
@@ -216,6 +217,60 @@
         .route-item:hover .path {
             margin-right: 60px;
         }
+
+        .star-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            fill: var(--text-color);
+            cursor: pointer;
+            display: none;
+            flex-shrink: 0;
+        }
+        
+        .star-icon.starred {
+            display: block;
+            fill: gold;
+        }
+        
+        .route-item:hover .star-icon {
+            display: block;
+        }
+
+        .star-icon:hover {
+            opacity: 0.8;
+        }
+
+        .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .favorites-filter {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            opacity: 0.7;
+            position: relative;
+            color: var(--text-color);
+        }
+
+        .favorites-filter:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .favorites-filter.active {
+            opacity: 1;
+            color: gold;
+        }
+
+        .favorites-filter text {
+            font-weight: bold;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -223,144 +278,187 @@
     <div class="controls">
         <span class="group-text">
             Group by:
-            <button id="basePathButton" onclick="handleGrouping('basePath', this)">Basepath</button>
+            <button id="basePathButton" onclick="handleGrouping('basepath', this)">Basepath</button>
             <button onclick="handleGrouping('method', this)">Method</button>
         </span>
-        <span class="fold-controls" id="foldControls" style="display: none;">
-            <button onclick="unfoldAll()" title="Unfold All">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 8l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M5 14l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-            </button>
-            <button onclick="foldAll()" title="Fold All">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 18l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path d="M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
-            </button>
+        <span class="right-controls">
+            <span class="fold-controls" id="foldControls" style="display: none;">
+                <button onclick="unfoldAll()" title="Unfold All">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 8l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M5 14l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button onclick="foldAll()" title="Fold All">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 18l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </span>
+            <span id="favoritesFilterContainer"></span>
         </span>
     </div>
 
     <ul id="routesList"></ul>
 
     <script>
-        function showGroupingButtons() {
-            const basePaths = new Set(routes.map(route => route.basePath));
-            if (basePaths.size > 1) {
-                document.getElementById('basePathButton').style.display = 'inline';
+        let favoritesOnly = false;
+        let starredCount = 0;
+        let currentGrouping = 'none';
+        let routes = JSON.parse('^routes^');
+
+        // Initialize starred count
+        starredCount = routes.filter(route => route.isStarred).length;
+
+        function toggleFavoritesFilter() {
+            favoritesOnly = !favoritesOnly;
+            document.querySelector('.favorites-filter').classList.toggle('active', favoritesOnly);
+            renderRoutes();
+        }
+
+        function toggleFavorite(routeId, element) {
+            const wasStarred = element.classList.contains('starred');
+            element.classList.toggle('starred');
+            starredCount += wasStarred ? -1 : 1;
+
+            // Update the isStarred field in the routes array
+            const route = routes.find(route => route.routeId === routeId);
+            if (route) {
+                route.isStarred = !wasStarred;
+            }
+
+            vscode.postMessage({
+                command: 'toggleFavorite',
+                routeId: routeId
+            });
+
+            if (favoritesOnly && wasStarred) {
+                renderRoutes();
+            }
+            updateFavoritesFilterButton();
+        }
+        
+        window.addEventListener('message', event => {
+            const { command, routeId, isStarred } = event.data;
+            if (command === 'updateFavorite') {
+                const starIcon = document.querySelector(`[data-route-id="${routeId}"] .star-icon`);
+                if (starIcon) {
+                    const wasStarred = starIcon.classList.contains('starred');
+                    starIcon.classList.toggle('starred', isStarred);
+                    starredCount += isStarred ? 1 : (wasStarred ? -1 : 0);
+                    
+                    // Update the isStarred field in the routes array
+                    const route = routes.find(route => route.routeId === routeId);
+                    if (route) {
+                        route.isStarred = isStarred;
+                    }
+                    
+                    if (favoritesOnly && !isStarred) {
+                        renderRoutes();
+                    }
+                    updateFavoritesFilterButton();
+                }
+            }
+        });
+
+        function updateFavoritesFilterButton() {
+            const container = document.getElementById('favoritesFilterContainer');
+            if (starredCount > 0) {
+                container.innerHTML = `
+                    <button class="favorites-filter ${favoritesOnly ? 'active' : ''}" onclick="toggleFavoritesFilter()"
+                        title="Show only starred routes">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                    </button>
+                `;
             } else {
-                document.getElementById('basePathButton').style.display = 'none';
+                container.innerHTML = '';
+                // Force exit favorites mode if no starred routes
+                if (favoritesOnly) {
+                    favoritesOnly = false;
+                    renderRoutes();
+                }
             }
         }
+        
+        function showGroupingButtons() {
+            const basePaths = new Set(routes.map(route => route.basePath));
+            document.getElementById('basePathButton').style.display = basePaths.size > 1 ? 'inline' : 'none';
+        }
+
         function copyRoute(route) {
-            vscode.postMessage({
-                command: 'copyRoute',
-                route: route
-            });
+            vscode.postMessage({ command: 'copyRoute', route: route });
             const button = event.target;
             const originalText = button.textContent;
             button.textContent = 'Copied!';
-            setTimeout(() => {
-                button.textContent = originalText;
-            }, 1000);
+            setTimeout(() => button.textContent = originalText, 1000);
         }
+
         function foldAll() {
-            document.querySelectorAll('.group-content').forEach(groupContent => {
-                groupContent.classList.remove('visible');
-            });
-            document.querySelectorAll('.group-header').forEach(groupHeader => {
-                groupHeader.classList.remove('expanded');
-            });
+            document.querySelectorAll('.group-content').forEach(el => el.classList.remove('visible'));
+            document.querySelectorAll('.group-header').forEach(el => el.classList.remove('expanded'));
         }
 
         function unfoldAll() {
-            document.querySelectorAll('.group-content').forEach(groupContent => {
-                groupContent.classList.add('visible');
-            });
-            document.querySelectorAll('.group-header').forEach(groupHeader => {
-                groupHeader.classList.add('expanded');
-            });
+            document.querySelectorAll('.group-content').forEach(el => el.classList.add('visible'));
+            document.querySelectorAll('.group-header').forEach(el => el.classList.add('expanded'));
         }
+
         function handleGrouping(value, element) {
-            // If already active, turn it off and revert grouping
             if (element.classList.contains('active')) {
                 element.classList.remove('active');
-                changeGrouping('none');  // changeGrouping should be defined elsewhere
+                changeGrouping('none');
                 document.getElementById('foldControls').style.display = 'none';
                 return;
             }
 
-            // Remove active class from all buttons
-            document.querySelectorAll('.group-text button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // Activate the clicked button and update grouping
+            document.querySelectorAll('.group-text button').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
-            changeGrouping(value);  // changeGrouping should be defined elsewhere
+            changeGrouping(value);
             document.getElementById('foldControls').style.display = 'inline';
         }
-        let currentGrouping = 'none';
-        let routes = JSON.parse('^routes^');
 
         function getMethodIcon(method) {
-            const iconSize = 16;
-            switch (method.toUpperCase()) {
-                case "GET":
-                    return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`;
-                case "POST":
-                    return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>`;
-                case "PUT":
-                    return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
-                case "PATCH":
-                    return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 512 512" fill="currentColor">
-        <defs>
-            <mask id="cutout" x="0" y="0" width="100%" height="100%">
-                <!-- Outer shape (full visibility) -->
-                <path d="M 472.021 162.393 C 469.178 172.948 463.775 182.831 455.776 190.803 L 185.511 461.081 C 177.525 469.08 167.643 474.482 157.088 477.327 C 146.504 480.185 135.233 480.583 123.934 478.865 C 101.325 475.402 78.385 463.664 59.389 444.696 C 45.15 430.457 35.008 413.962 29.343 397.112 C 23.695 380.248 22.485 362.888 26.759 346.985 C 29.605 336.43 35.005 326.56 43.006 318.575 L 313.268 48.299 C 321.254 40.312 331.137 34.911 341.692 32.065 C 352.277 29.193 363.534 28.808 374.846 30.526 C 397.47 33.991 420.396 45.728 439.39 64.696 C 453.63 78.936 463.774 95.416 469.436 112.28 C 475.072 129.144 476.309 146.505 472.021 162.393 Z" fill="white"/>
-                <!-- Center shape (cutout) -->
-                <path d="M 221.799 181.933 Q 241.359 162.373 260.919 181.933 L 319.599 240.613 Q 339.159 260.173 319.599 279.733 L 260.919 338.413 Q 241.359 357.973 221.799 338.413 L 163.119 279.733 Q 143.559 260.173 163.119 240.613 Z" fill="black"/>
-            </mask>
-        </defs>
-        <!-- Apply mask to the main shape -->
-        <path d="M 472.021 162.393 C 469.178 172.948 463.775 182.831 455.776 190.803 L 185.511 461.081 C 177.525 469.08 167.643 474.482 157.088 477.327 C 146.504 480.185 135.233 480.583 123.934 478.865 C 101.325 475.402 78.385 463.664 59.389 444.696 C 45.15 430.457 35.008 413.962 29.343 397.112 C 23.695 380.248 22.485 362.888 26.759 346.985 C 29.605 336.43 35.005 326.56 43.006 318.575 L 313.268 48.299 C 321.254 40.312 331.137 34.911 341.692 32.065 C 352.277 29.193 363.534 28.808 374.846 30.526 C 397.47 33.991 420.396 45.728 439.39 64.696 C 453.63 78.936 463.774 95.416 469.436 112.28 C 475.072 129.144 476.309 146.505 472.021 162.393 Z" fill="purple" mask="url(#cutout)"/>
-    </svg>`;
-
-
-                case "DELETE":
-                    return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>`;
-                default:
-                    return `<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
-            }
+            const icons = {
+                GET: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>',
+                POST: '<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>',
+                PUT: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>',
+                PATCH: '<path d="M472.021 162.393C469.178 172.948 463.775 182.831 455.776 190.803L185.511 461.081C177.525 469.08 167.643 474.482 157.088 477.327C146.504 480.185 135.233 480.583 123.934 478.865C101.325 475.402 78.385 463.664 59.389 444.696C45.15 430.457 35.008 413.962 29.343 397.112C23.695 380.248 22.485 362.888 26.759 346.985C29.605 336.43 35.005 326.56 43.006 318.575L313.268 48.299C321.254 40.312 331.137 34.911 341.692 32.065C352.277 29.193 363.534 28.808 374.846 30.526C397.47 33.991 420.396 45.728 439.39 64.696C453.63 78.936 463.774 95.416 469.436 112.28C475.072 129.144 476.309 146.505 472.021 162.393Z" fill="purple" mask="url(#cutout)"/>',
+                DELETE: '<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>'
+            };
+            return `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">${icons[method.toUpperCase()] || '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'}</svg>`;
         }
 
         function renderRoute(route) {
             const fullPath = currentGrouping === 'basePath' ? route.path : `${route.basePath}${route.path}`;
-            const methodIcon = getMethodIcon(route.method);
-            const pathComponents = route.file.split('/');
-            const description = pathComponents.slice(-2).join('/');
-            const methodClass = `method-${route.method.toLowerCase()}`;
-
-            // Escape < and > characters in the path
-            const escapedFullPath = fullPath.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const escapedBasePath = route.basePath.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            const escapedPath = route.path.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const escapedPath = fullPath.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const description = route.file.split('/').slice(-2).join('/');
 
             return `
                 <li class="route-item" onclick="openRoute('${route.file}', ${route.fileLine})">
-                    <span class="method ${methodClass}">
-                        ${methodIcon}
+                    <svg class="star-icon ${route.isStarred ? 'starred' : ''}" 
+                         data-route-id="${route.routeId}"
+                         onclick="event.stopPropagation(); toggleFavorite('${route.routeId}', this)"
+                         viewBox="0 0 24 24">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                    <span class="method method-${route.method.toLowerCase()}">
+                        ${getMethodIcon(route.method)}
                         ${route.method}
                     </span>
-                    <span class="path" title="${escapedFullPath}">${escapedFullPath}</span>
+                    <span class="path" title="${escapedPath}">${escapedPath}</span>
                     <span class="description" title="${description}">- ${description}</span>
-                    <button class="copy-button" onclick="event.stopPropagation(); copyRoute('${escapedBasePath}${escapedPath}')">
-                        Copy
+                    <button class="copy-button" onclick="event.stopPropagation(); copyRoute('${escapedPath}')">
+                        <svg viewBox="0 0 24 24" width="14" height="14">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
                     </button>
                 </li>
                 `;
@@ -372,51 +470,48 @@
         }
 
         function renderRoutes() {
+            const filteredRoutes = favoritesOnly
+                ? routes.filter(route => route.isStarred)
+                : routes;
+
             const list = document.getElementById('routesList');
 
             if (currentGrouping === 'none') {
-                list.innerHTML = routes.map(route => renderRoute(route)).join('');
+                list.innerHTML = filteredRoutes.map(renderRoute).join('');
                 return;
             }
 
-            const groups = {};
-            routes.forEach(route => {
+            const groups = filteredRoutes.reduce((acc, route) => {
                 const key = currentGrouping === 'method' ? route.method : (route.basePath || '/');
-                if (!groups[key]) groups[key] = [];
-                groups[key].push(route);
+                (acc[key] = acc[key] || []).push(route);
+                return acc;
+            }, {});
+
+            const sortedGroups = Object.entries(groups).sort(([a], [b]) => {
+                const order = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+                const indexA = order.indexOf(a);
+                const indexB = order.indexOf(b);
+                return (indexA - indexB) || a.localeCompare(b);
             });
 
-            const desiredOrder = currentGrouping === 'method' ? ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'ANY'] : [];
-
-            list.innerHTML = Object.entries(groups)
-                .sort(([a], [b]) => {
-                    const indexA = desiredOrder.indexOf(a);
-                    const indexB = desiredOrder.indexOf(b);
-                    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-                    if (indexA === -1) return 1;
-                    if (indexB === -1) return -1;
-                    return indexA - indexB;
-                })
-                .map(([group, items]) => `
+            list.innerHTML = sortedGroups.map(([group, items]) => `
                 <div class="group-header expanded" onclick="toggleGroup('${group}')">
-                    <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" fill="currentColor"/>
+                    <svg class="arrow" width="16" height="16" viewBox="0 0 24 24">
+                        <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z"/>
                     </svg>
                     ${group}
                 </div>
                 <div class="group-content visible" id="group-${group}">
-                    ${items.map(route => renderRoute(route)).join('')}
+                    ${items.map(renderRoute).join('')}
                 </div>
             `).join('');
         }
 
         function toggleGroup(group) {
-            const groupHeader = document.querySelector(`.group-header[onclick="toggleGroup('${group}')"]`);
-            const groupContent = document.getElementById(`group-${group}`);
-            if (groupContent) {
-                groupContent.classList.toggle('visible');
-                groupHeader.classList.toggle('expanded');
-            }
+            const header = document.querySelector(`.group-header[onclick="toggleGroup('${group}')"]`);
+            const content = document.getElementById(`group-${group}`);
+            header.classList.toggle('expanded');
+            content.classList.toggle('visible');
         }
 
         function openRoute(file, line) {
@@ -426,7 +521,8 @@
         // Initial render
         renderRoutes();
         showGroupingButtons();
-    </script>
+        updateFavoritesFilterButton();
+        </script>
 
 </body>
 
