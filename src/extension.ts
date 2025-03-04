@@ -64,6 +64,12 @@ export function activate(context: vscode.ExtensionContext) {
 		provider.updateWebview()
 	})
 	context.subscriptions.push(clearFavorites)
+
+	// Command to download routes
+	const postmanExport = vscode.commands.registerCommand("octapi.postmanExport", () => {
+		provider.postmanExport()
+	})
+	context.subscriptions.push(postmanExport)
 }
 
 // This method is called when your extension is deactivated

@@ -52,6 +52,10 @@
         "command": "octapi.clearFavs",
         "icon": "$(star-empty)",
         "title": "Clear Favorites"
+      },
+      {
+        "command": "octapi.postmanExport",
+        "title": "Export to Postman"
       }
     ],
     "viewsContainers": {
@@ -73,22 +77,42 @@
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "octapi/moreActions",
+        "label": "More Actions",
+        "icon": "$(ellipsis)"
+      }
+    ],
     "menus": {
       "view/title": [
-        {
-          "command": "octapi.openSettings",
-          "when": "view == OctAPISideBar",
-          "group": "navigation"
-        },
         {
           "command": "octapi.refreshEntry",
           "when": "view == OctAPISideBar",
           "group": "navigation"
         },
         {
-          "command": "octapi.feedback",
+          "submenu": "octapi/moreActions",
           "when": "view == OctAPISideBar",
-          "group": "navigation"
+          "group": "navigation@1"
+        }
+      ],
+      "octapi/moreActions": [
+        {
+          "command": "octapi.openSettings",
+          "when": "view == OctAPISideBar"
+        },
+        {
+          "command": "octapi.feedback",
+          "when": "view == OctAPISideBar"
+        },
+        {
+          "command": "octapi.postmanExport",
+          "when": "view == OctAPISideBar"
+        },
+        {
+          "command": "octapi.clearFavs",
+          "when": "view == OctAPISideBar"
         }
       ]
     },

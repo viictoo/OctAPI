@@ -8,6 +8,7 @@ import { Route } from '../types';
 export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView
     private updateCounter = 0 // Counter to track the latest update call
+    routes: Route[] = []
     starredRoutes: Set<string>
 
     constructor(private context: vscode.ExtensionContext) {
@@ -18,6 +19,106 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
 
     persistStarredRoutes() {
         this.context.globalState.update('starredRoutes', Array.from(this.starredRoutes))
+    }
+
+    async postmanExport() {
+        if (this.routes.length === 0) {
+            vscode.window.showErrorMessage('No routes found to export');
+            return;
+        }
+    
+        // Helper function to detect and convert path parameters
+        const convertPathParams = (path: string) => {
+            // Handle FastAPI format: /users/{username}/post/{id}
+            path = path.replace(/{(\w+)}/g, '{{$1}}');
+            
+            // Handle Express/NestJS/Koa format: /users/:id
+            path = path.replace(/\/:(\w+)/g, '/{{$1}}');
+            
+            // Handle Flask format: /users/<int:user_id>
+            path = path.replace(/<[^>]+>/g, (match) => {
+                const param = match.slice(1, -1).split(':').pop()!;
+                return `{{${param}}}`;
+            });
+            
+            return path;
+        };
+    
+        // Generate Postman collection structure
+        const postmanCollection: any = {
+            info: {
+                name: "API Routes",
+                schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+            },
+            item: this.routes.map(route => {
+                const fullPath = `${route.basePath}${route.path}`;
+                const postmanPath = convertPathParams(fullPath);
+                
+                // Extract parameter names for Postman variables
+                const params = postmanPath.match(/\/:(\w+)/g)?.map(p => p.slice(2)) || [];
+    
+                return {
+                    name: `${route.method} ${fullPath}`,
+                    request: {
+                        method: route.method.toUpperCase(),
+                        header: [],
+                        url: {
+                            raw: `{{baseUrl}}${postmanPath}`,
+                            host: ["{{baseUrl}}"],
+                            path: postmanPath.split('/').filter(p => p),
+                            variable: params.map(param => ({
+                                key: param,
+                                value: `example_${param}`,
+                                description: `Path parameter: ${param}`
+                            }))
+                        }
+                    }
+                };
+            }),
+            variable: []
+        };
+    
+        // Get URL prefix from configuration
+        const config = vscode.workspace.getConfiguration("OctAPI");
+        const urlPrefix = config.get<string>("urlPrefix", "");
+        
+        // Add base URL variable if prefix exists
+        if (urlPrefix) {
+            postmanCollection.variable.push({
+                key: "baseUrl",
+                value: urlPrefix,
+                type: "string"
+            });
+        }
+    
+        const collectionJson = JSON.stringify(postmanCollection, null, 2);
+    
+        // Set default filename
+        const defaultFileName = 'Postman_Collection.json';
+    
+        // Get workspace path for default save location
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        let defaultUri = workspaceFolders?.[0]?.uri;
+        if (defaultUri) {
+            defaultUri = defaultUri.with({ path: path.join(defaultUri.path, defaultFileName) });
+        }
+    
+        // Show save dialog
+        const uri = await vscode.window.showSaveDialog({
+            filters: { 'Postman Collections': ['json'] },
+            title: 'Export Postman Collection',
+            defaultUri: defaultUri
+        });
+    
+        if (uri) {
+            await vscode.workspace.fs.writeFile(uri, Buffer.from(collectionJson));
+            const openFileButton = 'Open File';
+            vscode.window.showInformationMessage('Postman collection exported successfully!', openFileButton).then(selection => {
+                if (selection === openFileButton) {
+                    vscode.commands.executeCommand('vscode.open', uri);
+                }
+            });
+        }
     }
 
     private toggleRouteStar(routeId: string) {
@@ -76,7 +177,7 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
         const currentUpdate = ++this.updateCounter // Increment the counter for the current update
         if (this._view) this._view.webview.html = this.getLoading()
         const routes = await frameworkMiddleware()
-
+        this.routes = routes
 
         // Pass enhanced routes to the view
         // const html = this.getHtmlContent(processedRoutes)
