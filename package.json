@@ -47,6 +47,11 @@
         "command": "octapi.feedback",
         "icon": "$(bug)",
         "title": "Open Feedback Form"
+      },
+      {
+        "command": "octapi.clearFavs",
+        "icon": "$(star-empty)",
+        "title": "Clear Favorites"
       }
     ],
     "viewsContainers": {

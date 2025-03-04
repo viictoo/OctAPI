@@ -8,7 +8,7 @@ import { Route } from '../types';
 export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView
     private updateCounter = 0 // Counter to track the latest update call
-    private starredRoutes: Set<string>
+    starredRoutes: Set<string>
 
     constructor(private context: vscode.ExtensionContext) {
         // Initialize starred routes from persistent storage
@@ -16,7 +16,7 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
         this.starredRoutes = new Set(stored)
     }
 
-    private persistStarredRoutes() {
+    persistStarredRoutes() {
         this.context.globalState.update('starredRoutes', Array.from(this.starredRoutes))
     }
 

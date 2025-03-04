@@ -57,6 +57,13 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 	}
 
+	// Command to clear favorite routes
+	const clearFavorites = vscode.commands.registerCommand("octapi.clearFavs", () => {
+		provider.starredRoutes.clear()
+		provider.persistStarredRoutes()
+		provider.updateWebview()
+	})
+	context.subscriptions.push(clearFavorites)
 }
 
 // This method is called when your extension is deactivated
