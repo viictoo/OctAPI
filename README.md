@@ -28,13 +28,14 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 - **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
 - **Visual Enhancements** – Routes include distinct icons and colors, including special styling for `PATCH` routes.
 - **Native Sidebar Integration** – View all detected routes directly in VS Code’s sidebar.
+- **Favorite Routes Management** – Star and persistently favorite frequently used routes, with an option to clear all favorites via a dedicated command.
 
 ---
 
 ## 🛠 Report Issues & Give Feedback
 
 Have a suggestion or found a bug? Let us know!  
-👉 [Submit feedback here](https://forms.gle/4BuPRUAzjA2JBpjd8)  
+👉 [Submit feedback here](https://forms.gle/4BuPRUAzjA2JBpjd8)
 
 ---
 
@@ -89,6 +90,11 @@ You can install OctAPI from the following sources:
 ---
 
 ## Release Notes
+
+### v0.3.0
+
+- **Favorite Routes Management**: Added support for starring routes with persistence and toggle functionality, and introduced a command to clear favorite routes with updated UI and improved layout.
+- **Refactored Command Handling**: Removed unused commands for opening routes and copying route paths.
 
 ### v0.2.0
 

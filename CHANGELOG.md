@@ -2,6 +2,14 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.3.0] - 2025-03-01
+### Added
+- **Starring/Favoriting Routes**: Added support for starring routes with persistence and toggle functionality, allowing users to mark frequently used routes.
+- **Clear Favorite Routes Command**: Introduced a command to clear favorite routes, accompanied by UI updates and improved layout styling.
+
+### Changed
+- **Refactored Command Handling**: Simplified the command logic by removing unused commands for opening routes and copying route paths.
+
 ## [0.2.0] - 2025-02-25
 ### Added
 - **FastAPI support**: Now detects API routes for FastAPI, making OctAPI more versatile for Python developers.
