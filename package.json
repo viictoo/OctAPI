@@ -2,7 +2,7 @@
   "name": "octapi",
   "displayName": "OctAPI",
   "description": "API Route Explorer for VS Code",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -24,7 +24,8 @@
     "flask",
     "fastapi",
     "vscode",
-    "development"
+    "development",
+    "postman"
   ],
   "icon": "resources/octapi_logo.png",
   "publisher": "HasbiSabah",
@@ -141,7 +142,7 @@
         "OctAPI.urlPrefix": {
           "type": "string",
           "default": "",
-          "description": "Add a custom prefix to your copied paths, like http://localhost:3000/api",
+          "description": "Add a custom prefix to your copied paths and Postman exports, like http://localhost:3000/api",
           "order": 3
         }
       }

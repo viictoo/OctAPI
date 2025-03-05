@@ -2,7 +2,16 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
-## [0.3.0] - 2025-03-01
+## [0.4.0] - 2025-03-05
+### Added
+- **Enhanced FastAPI Processing**: Improved FastAPI route processing to handle router prefixes and include them in the basepath, ensuring accurate detection of API routes.
+- **Postman Export Command**: Added a command that exports API routes as an importable Postman JSON collection, including method, full path, and path parameters.
+
+### Fixed
+- **Koa Route Extraction**: Corrected method detection and prefix handling in Koa to prevent database calls from being mistaken as route definitions.
+- **Copy Button Bug**: Fixed an issue where the copy button would disappear after being clicked.
+
+## [0.3.0] - 2025-03-04
 ### Added
 - **Starring/Favoriting Routes**: Added support for starring routes with persistence and toggle functionality, allowing users to mark frequently used routes.
 - **Clear Favorite Routes Command**: Introduced a command to clear favorite routes, accompanied by UI updates and improved layout styling.
