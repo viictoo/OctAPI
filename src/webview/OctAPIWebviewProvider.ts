@@ -43,38 +43,62 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
             
             return path;
         };
-    
-        // Generate Postman collection structure
+
+        // Group routes by their basePath
+        const routeGroups = new Map<string, any[]>();
+        this.routes.forEach(route => {
+            const basePath = route.basePath || '';
+            if (!routeGroups.has(basePath)) {
+                routeGroups.set(basePath, []);
+            }
+            routeGroups.get(basePath)!.push(route);
+        });
+
+    // Create Postman items with folders for each basePath group
+    const postmanItems = [];
+    for (const [basePath, routes] of routeGroups) {
+        const folderItems = routes.map(route => {
+            const fullPath = `${route.basePath}${route.path}`;
+            const postmanPath = convertPathParams(fullPath);
+            const params = postmanPath.match(/{{(\w+)}}/g)?.map(p => p.slice(2, -2)) || [];
+
+            return {
+                name: `${route.method} ${fullPath}`,
+                request: {
+                    method: route.method.toUpperCase(),
+                    header: [],
+                    url: {
+                        raw: `{{baseUrl}}${postmanPath}`,
+                        host: ["{{baseUrl}}"],
+                        path: postmanPath.split('/').filter(p => p),
+                        variable: params.map(param => ({
+                            key: param,
+                            value: `example_${param}`,
+                            description: `Path parameter: ${param}`
+                        }))
+                    }
+                }
+            };
+        });
+
+        if (basePath) {
+            // Add grouped routes under a folder
+            postmanItems.push({
+                name: basePath,
+                item: folderItems
+            });
+        } else {
+            // Add routes without basePath directly to the root
+            postmanItems.push(...folderItems);
+        }
+    }
+
         const postmanCollection: any = {
             info: {
                 name: "API Routes",
                 schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
             },
-            item: this.routes.map(route => {
-                const fullPath = `${route.basePath}${route.path}`;
-                const postmanPath = convertPathParams(fullPath);
-                
-                // Extract parameter names for Postman variables
-                const params = postmanPath.match(/\/:(\w+)/g)?.map(p => p.slice(2)) || [];
-    
-                return {
-                    name: `${route.method} ${fullPath}`,
-                    request: {
-                        method: route.method.toUpperCase(),
-                        header: [],
-                        url: {
-                            raw: `{{baseUrl}}${postmanPath}`,
-                            host: ["{{baseUrl}}"],
-                            path: postmanPath.split('/').filter(p => p),
-                            variable: params.map(param => ({
-                                key: param,
-                                value: `example_${param}`,
-                                description: `Path parameter: ${param}`
-                            }))
-                        }
-                    }
-                };
-            }),
+            item: postmanItems,
             variable: []
         };
     
