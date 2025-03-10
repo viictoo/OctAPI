@@ -29,7 +29,7 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 - **Visual Enhancements** – Routes include distinct icons and colors, including special styling for `PATCH` routes.
 - **Native Sidebar Integration** – View all detected routes directly in VS Code’s sidebar.
 - **Favorite Routes Management** – Star and persistently favorite frequently used routes, with an option to clear all favorites via a dedicated command.
-- **Postman Export Command** – Export API routes as an importable Postman JSON collection, complete with method, full path, and path parameters.
+- **Postman Export Command** – Export API routes as an importable Postman JSON collection, complete with method, full path, and path parameters, organized in appropriate subfolders.
 
 ---
 
@@ -91,6 +91,9 @@ You can install OctAPI from the following sources:
 ---
 
 ## Release Notes
+
+### v0.4.1 - 2025-03-10 
+- **Postman Export Grouping**: Routes are now grouped into subfolders based on their basepath instead of all being placed in the root folder, making API organization clearer.
 
 ### v0.4.0 - 2025-03-05
 - **Enhanced FastAPI Processing**: Improved FastAPI route processing to handle router prefixes and include them in the basepath.

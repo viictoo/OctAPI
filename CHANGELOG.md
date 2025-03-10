@@ -2,6 +2,10 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.4.1] - 2025-03-10  
+### Changed  
+- **Postman Export Grouping**: Routes are now grouped into subfolders based on their basepath instead of all being placed in the root folder, making API organization clearer.
+
 ## [0.4.0] - 2025-03-05
 ### Added
 - **Enhanced FastAPI Processing**: Improved FastAPI route processing to handle router prefixes and include them in the basepath, ensuring accurate detection of API routes.
