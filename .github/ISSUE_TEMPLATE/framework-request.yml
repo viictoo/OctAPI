@@ -1,0 +1,36 @@
+name: Framework Support Request  
+description: Request a new framework to be supported by OctAPI  
+title: "[Framework Request]: <Framework Name>"  
+labels: ["enhancement", "framework"]  
+assignees:  
+  - Hasbi-sabah
+body:  
+  - type: input  
+    id: framework  
+    attributes:  
+      label: Framework Name  
+      description: "What framework do you want OctAPI to support?"  
+      placeholder: "e.g., Fastify, Next.js"  
+    validations:  
+      required: true  
+  - type: textarea  
+    id: detection  
+    attributes:  
+      label: How are routes defined in this framework?  
+      description: "Provide code snippets or documentation links showing route declarations (e.g., decorators, functions)."  
+      placeholder: |  
+        Example for Fastify:  
+        ```javascript  
+        fastify.get('/api/users', handler)  
+        ```   
+  - type: input  
+    id: docs  
+    attributes:  
+      label: Official Documentation Link  
+      placeholder: "https://framework.dev/docs/routing"   
+  - type: textarea  
+    id: motivation  
+    attributes:  
+      label: Why should OctAPI prioritize this framework?  
+      description: "Is it widely used? Do you personally need it?"  
+      placeholder: "This framework is popular in..."  
