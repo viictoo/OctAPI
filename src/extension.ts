@@ -46,13 +46,9 @@ export function activate(context: vscode.ExtensionContext) {
 		console.error("No path configured for OctAPI.path");
 	} else {
 		const absolutePath = vscode.Uri.joinPath(vscode.workspace.workspaceFolders[0].uri, routePath).fsPath;
-		const updateView = (uri: vscode.Uri) => {
-			provider.updateWebview();
-		};
-	
 		vscode.workspace.onDidSaveTextDocument((doc) => {
 			if (doc.uri.fsPath.startsWith(absolutePath)) {
-				updateView(doc.uri);
+				provider.updateWebview();
 			}
 		});
 	}

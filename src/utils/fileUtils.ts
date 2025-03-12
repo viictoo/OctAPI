@@ -1,35 +1,57 @@
+import path from "path";
 import * as vscode from "vscode"
 
 export async function getFilesRecursively(directoryUri: vscode.Uri): Promise<vscode.Uri[]> {
-    const fileUris: vscode.Uri[] = []
-    const directoryUris: vscode.Uri[] = []
+    const fileUris: vscode.Uri[] = [];
+    const directoryUris: vscode.Uri[] = [];
+    const blockedDirs = new Set(['node_modules', '.git', 'dist', 'build', 'coverage', '__tests__', '__mocks__']);
+    const blockedFileExtensions = new Set(['.md', '.txt', '.json', '.lock', '.log', '.map', '.png', '.jpg']);
 
     try {
-        const entries = await vscode.workspace.fs.readDirectory(directoryUri)
+        const entries = await vscode.workspace.fs.readDirectory(directoryUri);
 
         for (const [name, type] of entries) {
-            const fileUri = vscode.Uri.joinPath(directoryUri, name)
-            const isDirectory = type === vscode.FileType.Directory
+            const fileUri = vscode.Uri.joinPath(directoryUri, name);
+            const isDirectory = type === vscode.FileType.Directory;
+            const ext = path.extname(name).toLowerCase();
 
             if (isDirectory) {
-                // Exclude directories that start and end with __
-                if (!name.startsWith("__") && !name.endsWith("__")) {
-                    directoryUris.push(fileUri) // Collect directory URIs
+                // Skip blocked directories and special patterns
+                if (!blockedDirs.has(name) &&
+                    !name.startsWith("__") && 
+                    !name.endsWith("__") &&
+                    !name.startsWith('.') // Skip hidden directories
+                ) {
+                    directoryUris.push(fileUri);
                 }
             } else {
-                fileUris.push(fileUri) // Collect file URIs
+                // Skip non-source files and common configs
+                if (!blockedFileExtensions.has(ext) &&
+                    !name.startsWith('.') && // Skip dotfiles
+                    !name.endsWith('.d.ts') && // Skip TypeScript declaration files
+                    !name.endsWith('.min.js') && // Skip minified files
+                    name !== 'package-lock.json' &&
+                    name !== 'yarn.lock' &&
+                    name !== '.env'
+                ) {
+                    fileUris.push(fileUri);
+                }
             }
         }
 
-        // Recursively get files from subdirectories
-        for (const dirUri of directoryUris) {
-            fileUris.push(...(await getFilesRecursively(dirUri)))
+        // Process directories in batches to prevent stack overflows
+        while (directoryUris.length > 0) {
+            const batch = directoryUris.splice(0, 10); // Process 10 dirs at a time
+            const results = await Promise.all(
+                batch.map(dir => getFilesRecursively(dir))
+            );
+            fileUris.push(...results.flat());
         }
     } catch (error) {
-        console.error(`Error reading directory ${directoryUri.fsPath}:`, error)
+        console.error(`Error reading directory ${directoryUri.fsPath}:`, error);
     }
 
-    return fileUris
+    return fileUris;
 }
 
 export function openFileAtLine(file: string, line: number) {
