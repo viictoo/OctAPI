@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from "vscode";
 import { openFileAtLine } from "../utils/fileUtils";
-import frameworkMiddleware from '../languages';
+import frameworkMiddleware from '../parsers';
 import { Route } from '../types';
 
 export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider {
