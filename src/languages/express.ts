@@ -1,34 +1,12 @@
 import { parse } from "@babel/parser"
 import traverse from "@babel/traverse"
 import * as t from "@babel/types"
-import * as path from "path"
 import * as vscode from "vscode"
 import { Route } from "../types"
-import { getFilesRecursively } from "../utils/fileUtils"
+import { getFrameworkFiles } from "../utils/fileUtils"
 
 export default async function extractExpressRoutes() {
-    const config = vscode.workspace.getConfiguration("OctAPI")
-    const routePath = config.get<string>("path", "./src/")
-    // console.log(`Configured route path: ${routePath}`)
-
-    const workspaceFolders = vscode.workspace.workspaceFolders
-    if (!workspaceFolders) {
-        console.log("No workspace folder is open.")
-        return []
-    }
-
-    const workspaceRoot = workspaceFolders[0].uri.fsPath
-    const absoluteRoutePath = path.resolve(workspaceRoot, routePath)
-    // console.log(`Absolute route path: ${absoluteRoutePath}`)
-
-    const directoryUri = vscode.Uri.file(absoluteRoutePath)
-    const fileUris = await getFilesRecursively(directoryUri)
-    const jsFileUris = fileUris.filter((uri) => uri.fsPath.endsWith(".js") || uri.fsPath.endsWith(".ts"))
-    // console.log(
-    //     `Found files:`,
-    //     jsFileUris.map((uri) => uri.fsPath),
-    // )
-
+    const jsFileUris = await getFrameworkFiles(['.js', '.ts'])
     const routesList: Route[] = []
     const routerVariables = new Set<string>()
     const nestedRouters = new Map<string, string>() // Stores mounted routers and their base paths

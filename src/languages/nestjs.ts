@@ -1,37 +1,16 @@
 import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
 import * as t from "@babel/types";
-import * as path from "path";
 import * as vscode from "vscode";
-import { getFilesRecursively } from "../utils/fileUtils"
 import { Route } from "../types";
+import { getFrameworkFiles } from "../utils/fileUtils";
 
 export default async function extractNestJSRoutes() {
-    const config = vscode.workspace.getConfiguration("OctAPI");
-    const routePath = config.get<string>("path", "./src/");
-    // console.log(`Configured route path: ${routePath}`)
-
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) {
-        console.log("No workspace folder is open.");
-        return [];
-    }
-
-    const workspaceRoot = workspaceFolders[0].uri.fsPath;
-    const absoluteRoutePath = path.resolve(workspaceRoot, routePath);
-    // console.log(`Absolute route path: ${absoluteRoutePath}`)
-
-    const directoryUri = vscode.Uri.file(absoluteRoutePath);
-    const fileUris = await getFilesRecursively(directoryUri);
-    const tsFileUris = fileUris.filter((uri) => uri.fsPath.endsWith(".ts"));
-    // console.log(
-    //     `Found files:`,
-    //     tsFileUris.map((uri) => uri.fsPath),
-    // )
+    const jstsFileUris = await getFrameworkFiles(['.js', '.ts'])
 
     const routesList: Route[] = [];
 
-    for (const fileUri of tsFileUris) {
+    for (const fileUri of jstsFileUris) {
         const document = await vscode.workspace.openTextDocument(fileUri);
         const code = document.getText();
         try {

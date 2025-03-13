@@ -1,28 +1,12 @@
 import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import { getFilesRecursively } from "../utils/fileUtils"
 import { Route } from '../types';
+import { getFrameworkFiles } from "../utils/fileUtils";
 
 export default async function extractKoaRoutes() {
-    const config = vscode.workspace.getConfiguration('OctAPI');
-    const routePath = config.get<string>('path', './src/');
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-
-    if (!workspaceFolders) {
-        console.log('No workspace folder is open.');
-        return [];
-    }
-
-    const workspaceRoot = workspaceFolders[0].uri.fsPath;
-    const absoluteRoutePath = path.resolve(workspaceRoot, routePath);
-
-    const directoryUri = vscode.Uri.file(absoluteRoutePath);
-    const fileUris = await getFilesRecursively(directoryUri);
-    const jsFileUris = fileUris.filter((uri) => uri.fsPath.endsWith('.js') || uri.fsPath.endsWith('.ts'));
-
+    const jsFileUris = await getFrameworkFiles(['.js', '.ts'])
     const routesList: Route[] = [];
     const routerPrefixes = new Map<string, string>();
 
@@ -50,12 +34,12 @@ export default async function extractKoaRoutes() {
                             const parentPath = path.parentPath;
                             const isLikelyRouterMethod = (
                                 // Check for method chaining or direct router method
-                                (t.isCallExpression(parentPath.node) && 
-                                 t.isMemberExpression(parentPath.node.callee) && 
-                                 t.isIdentifier(parentPath.node.callee.property) &&
-                                 ['use', 'routes', 'allowedMethods'].includes(parentPath.node.callee.property.name)) ||
-                                (t.isVariableDeclarator(parentPath.node) && 
-                                 t.isIdentifier(parentPath.node.id)) ||
+                                (t.isCallExpression(parentPath.node) &&
+                                    t.isMemberExpression(parentPath.node.callee) &&
+                                    t.isIdentifier(parentPath.node.callee.property) &&
+                                    ['use', 'routes', 'allowedMethods'].includes(parentPath.node.callee.property.name)) ||
+                                (t.isVariableDeclarator(parentPath.node) &&
+                                    t.isIdentifier(parentPath.node.id)) ||
                                 (t.isAssignmentExpression(parentPath.node))
                             );
 
@@ -68,10 +52,10 @@ export default async function extractKoaRoutes() {
                                 // Adding the detected route to the list
                                 routesList.push({
                                     method,
-                                    path: routePathValue, 
+                                    path: routePathValue,
                                     file: filePath,
                                     fileLine: path.node.loc?.start.line || 0,
-                                    basePath: routerPrefix || '', 
+                                    basePath: routerPrefix || '',
                                 });
                             }
                         }
@@ -95,6 +79,6 @@ export default async function extractKoaRoutes() {
             return [];
         }
     }
-    
+
     return routesList;
 }

@@ -64,3 +64,28 @@ export function openFileAtLine(file: string, line: number) {
         })
     })
 }
+
+export async function getFrameworkFiles(extensions: string[]) {
+    const config = vscode.workspace.getConfiguration("OctAPI");
+    const routePath = config.get<string>("path", "./src/");
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+
+    if (!workspaceFolders) {
+        console.log("No workspace folder is open.");
+        return [];
+    }
+
+    const workspaceRoot = workspaceFolders[0].uri.fsPath;
+    const absoluteRoutePath = path.resolve(workspaceRoot, routePath);
+    const directoryUri = vscode.Uri.file(absoluteRoutePath);
+
+    try {
+        const allFiles = await getFilesRecursively(directoryUri);
+        return allFiles.filter(uri => 
+            extensions.some(ext => uri.fsPath.endsWith(ext))
+        );
+    } catch (error) {
+        console.error("Error retrieving framework files:", error);
+        return [];
+    }
+}
