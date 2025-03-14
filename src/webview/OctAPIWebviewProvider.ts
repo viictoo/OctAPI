@@ -1,46 +1,48 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from "vscode";
-import { openFileAtLine } from "../utils/fileUtils";
-import frameworkMiddleware from '../parsers';
 import { Route } from '../types';
+import { initializeCache, RouteCache } from '../utils/cache';
+import { openFileAtLine } from "../utils/fileUtils";
 
 export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider {
-    private _view?: vscode.WebviewView
-    private updateCounter = 0 // Counter to track the latest update call
-    routes: Route[] = []
-    starredRoutes: Set<string>
+    private _view?: vscode.WebviewView;
+    private updateCounter = 0; // Counter to track the latest update call
+    routes: Route[] = [];
+    starredRoutes: Set<string>;
 
     constructor(private context: vscode.ExtensionContext) {
         // Initialize starred routes from persistent storage
-        const stored = context.globalState.get<string[]>('starredRoutes') || []
-        this.starredRoutes = new Set(stored)
+        const stored = context.globalState.get<string[]>('starredRoutes') || [];
+        this.starredRoutes = new Set(stored);
     }
 
+    // Persist the starred routes to global state
     persistStarredRoutes() {
-        this.context.globalState.update('starredRoutes', Array.from(this.starredRoutes))
+        this.context.globalState.update('starredRoutes', Array.from(this.starredRoutes));
     }
 
+    // Export routes to a Postman collection
     async postmanExport() {
         if (this.routes.length === 0) {
             vscode.window.showErrorMessage('No routes found to export');
             return;
         }
-    
+
         // Helper function to detect and convert path parameters
         const convertPathParams = (path: string) => {
             // Handle FastAPI format: /users/{username}/post/{id}
             path = path.replace(/{(\w+)}/g, '{{$1}}');
-            
+
             // Handle Express/NestJS/Koa format: /users/:id
             path = path.replace(/\/:(\w+)/g, '/{{$1}}');
-            
+
             // Handle Flask format: /users/<int:user_id>
             path = path.replace(/<[^>]+>/g, (match) => {
                 const param = match.slice(1, -1).split(':').pop()!;
                 return `{{${param}}}`;
             });
-            
+
             return path;
         };
 
@@ -54,44 +56,44 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
             routeGroups.get(basePath)!.push(route);
         });
 
-    // Create Postman items with folders for each basePath group
-    const postmanItems = [];
-    for (const [basePath, routes] of routeGroups) {
-        const folderItems = routes.map(route => {
-            const fullPath = `${route.basePath}${route.path}`;
-            const postmanPath = convertPathParams(fullPath);
-            const params = postmanPath.match(/{{(\w+)}}/g)?.map(p => p.slice(2, -2)) || [];
+        // Create Postman items with folders for each basePath group
+        const postmanItems = [];
+        for (const [basePath, routes] of routeGroups) {
+            const folderItems = routes.map(route => {
+                const fullPath = `${route.basePath}${route.path}`;
+                const postmanPath = convertPathParams(fullPath);
+                const params = postmanPath.match(/{{(\w+)}}/g)?.map(p => p.slice(2, -2)) || [];
 
-            return {
-                name: `${route.method} ${fullPath}`,
-                request: {
-                    method: route.method.toUpperCase(),
-                    header: [],
-                    url: {
-                        raw: `{{baseUrl}}${postmanPath}`,
-                        host: ["{{baseUrl}}"],
-                        path: postmanPath.split('/').filter(p => p),
-                        variable: params.map(param => ({
-                            key: param,
-                            value: `example_${param}`,
-                            description: `Path parameter: ${param}`
-                        }))
+                return {
+                    name: `${route.method} ${fullPath}`,
+                    request: {
+                        method: route.method.toUpperCase(),
+                        header: [],
+                        url: {
+                            raw: `{{baseUrl}}${postmanPath}`,
+                            host: ["{{baseUrl}}"],
+                            path: postmanPath.split('/').filter(p => p),
+                            variable: params.map(param => ({
+                                key: param,
+                                value: `example_${param}`,
+                                description: `Path parameter: ${param}`
+                            }))
+                        }
                     }
-                }
-            };
-        });
-
-        if (basePath) {
-            // Add grouped routes under a folder
-            postmanItems.push({
-                name: basePath,
-                item: folderItems
+                };
             });
-        } else {
-            // Add routes without basePath directly to the root
-            postmanItems.push(...folderItems);
+
+            if (basePath) {
+                // Add grouped routes under a folder
+                postmanItems.push({
+                    name: basePath,
+                    item: folderItems
+                });
+            } else {
+                // Add routes without basePath directly to the root
+                postmanItems.push(...folderItems);
+            }
         }
-    }
 
         const postmanCollection: any = {
             info: {
@@ -101,11 +103,11 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
             item: postmanItems,
             variable: []
         };
-    
+
         // Get URL prefix from configuration
         const config = vscode.workspace.getConfiguration("OctAPI");
         const urlPrefix = config.get<string>("urlPrefix", "");
-        
+
         // Add base URL variable if prefix exists
         if (urlPrefix) {
             postmanCollection.variable.push({
@@ -114,26 +116,26 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                 type: "string"
             });
         }
-    
+
         const collectionJson = JSON.stringify(postmanCollection, null, 2);
-    
+
         // Set default filename
         const defaultFileName = 'Postman_Collection.json';
-    
+
         // Get workspace path for default save location
         const workspaceFolders = vscode.workspace.workspaceFolders;
         let defaultUri = workspaceFolders?.[0]?.uri;
         if (defaultUri) {
             defaultUri = defaultUri.with({ path: path.join(defaultUri.path, defaultFileName) });
         }
-    
+
         // Show save dialog
         const uri = await vscode.window.showSaveDialog({
             filters: { 'Postman Collections': ['json'] },
             title: 'Export Postman Collection',
             defaultUri: defaultUri
         });
-    
+
         if (uri) {
             await vscode.workspace.fs.writeFile(uri, Buffer.from(collectionJson));
             const openFileButton = 'Open File';
@@ -145,38 +147,38 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
         }
     }
 
+    // Toggle the starred status of a route
     private toggleRouteStar(routeId: string) {
         if (this.starredRoutes.has(routeId)) {
-            this.starredRoutes.delete(routeId)
+            this.starredRoutes.delete(routeId);
         } else {
-            this.starredRoutes.add(routeId)
+            this.starredRoutes.add(routeId);
         }
-        this.persistStarredRoutes()
+        this.persistStarredRoutes();
     }
 
+    // Resolve the webview view
     resolveWebviewView(webviewView: vscode.WebviewView) {
-        this._view = webviewView
-        webviewView.webview.options = { enableScripts: true }
-        this._view.webview.html = this.getLoading()
-        // Initial load of routes
-        this.updateWebview()
+        this._view = webviewView;
+        webviewView.webview.options = { enableScripts: true };
+        this._view.webview.html = this.getLoading();
 
         // Listen for messages from the webview (e.g. refresh or open file)
         webviewView.webview.onDidReceiveMessage((message) => {
             switch (message.command) {
                 case "refresh":
-                    if (this._view) this._view.webview.html = this.getLoading()
-                    this.updateWebview()
-                    break
+                    if (this._view) this._view.webview.html = this.getLoading();
+                    this.updateWebview();
+                    break;
                 case "openFile":
-                    openFileAtLine(message.file, message.line)
-                    break
+                    openFileAtLine(message.file, message.line);
+                    break;
                 case "openSettings":
-                    vscode.commands.executeCommand("workbench.action.openSettings", "OctAPI")
-                    break
+                    vscode.commands.executeCommand("workbench.action.openSettings", "OctAPI");
+                    break;
                 case "vscodeFile":
                     vscode.commands.executeCommand('workbench.action.files.openFolder');
-                    break
+                    break;
                 case 'copyRoute':
                     const config = vscode.workspace.getConfiguration("OctAPI");
                     let urlPrefix = config.get<string>("urlPrefix", "");
@@ -184,47 +186,57 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
                     vscode.env.clipboard.writeText(`${urlPrefix}${message.route}`);
                     break;
                 case 'toggleFavorite':
-                    this.toggleRouteStar(message.routeId)
+                    this.toggleRouteStar(message.routeId);
                     // Send updated state back to webview
                     this._view?.webview.postMessage({
                         command: 'updateFavorite',
                         routeId: message.routeId,
                         isStarred: this.starredRoutes.has(message.routeId)
-                    })
-                    break
+                    });
+                    break;
             }
-        })
+        });
+    }
+
+    // Refresh routes and update the cache
+    private async refreshRoutes(): Promise<Route[]> {
+        const routeCache = RouteCache.getInstance();
+        routeCache.clear();
+        await initializeCache(this);
+        return routeCache.getAllRoutes();
     }
 
     // Re-extract routes and update the HTML content of the webview
-    async updateWebview() {
-        const currentUpdate = ++this.updateCounter // Increment the counter for the current update
-        if (this._view) this._view.webview.html = this.getLoading()
-        const routes = await frameworkMiddleware()
-        this.routes = routes
+    async updateWebview(force: boolean = false) {
+        const currentUpdate = ++this.updateCounter;
+        if (this._view) this._view.webview.html = this.getLoading();
+
+        console.log('Updating webview content...');
+        // Get routes from cache instead of frameworkMiddleware()
+        const routes = force ? await this.refreshRoutes() : RouteCache.getInstance().getAllRoutes();
+        console.log('Routes:', routes);
+        if (currentUpdate !== this.updateCounter) return;
+
+        this.routes = routes;
 
         // Pass enhanced routes to the view
-        // const html = this.getHtmlContent(processedRoutes)
-        if (currentUpdate !== this.updateCounter) {
-            // If the current update is not the latest, ignore the result
-            return
-        }
         if (routes.length === 0) {
-            const html = this.getWelcomeContent()
+            const html = this.getWelcomeContent();
             if (this._view) {
-                console.log('No routes found, displaying welcome message.')
-                this._view.webview.html = html
+                console.log('No routes found, displaying welcome message.');
+                this._view.webview.html = html;
             }
-            return
+            return;
         }
+
         // Add starred status to routes
         const processedRoutes = routes.map(route => ({
             ...route,
             routeId: `${route.method}-${route.path}-${route.file}`, // Unique ID
             isStarred: this.starredRoutes.has(`${route.method}-${route.path}-${route.file}`)
-        }))
+        }));
 
-        const html = this.getHtmlContent(processedRoutes)
+        const html = this.getHtmlContent(processedRoutes);
         if (this._view) {
             // Inject the VS Code API script and our custom styles
             this._view.webview.html = html.replace(
@@ -248,7 +260,7 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
         }
     }
 
-    // Update the getHtmlContent method to include the new SVG icon logic
+    // Get the HTML content for the routes
     private getHtmlContent(routes: Route[]): string {
         const htmlFilePath = path.join(__dirname, '..', 'webview', 'templates', 'apiManager.html');
         let htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
@@ -257,12 +269,14 @@ export default class OctAPIWebviewProvider implements vscode.WebviewViewProvider
         return htmlContent;
     }
 
+    // Get the welcome content HTML
     private getWelcomeContent(): string {
         const htmlFilePath = path.join(__dirname, '..', 'webview', 'templates', 'welcome.html');
         let htmlContent = fs.readFileSync(htmlFilePath, 'utf8');
         return htmlContent;
     }
 
+    // Get the loading content HTML
     private getLoading(): string {
         const htmlFilePath = path.join(__dirname, '..', 'webview', 'templates', 'loading.html');
         let htmlContent = fs.readFileSync(htmlFilePath, 'utf8');

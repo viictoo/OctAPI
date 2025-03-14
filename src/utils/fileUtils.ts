@@ -1,5 +1,7 @@
 import path from "path";
 import * as vscode from "vscode"
+import { frameworks } from "./frameworks";
+import { Route } from "../types";
 
 export async function getFilesRecursively(directoryUri: vscode.Uri): Promise<vscode.Uri[]> {
     const fileUris: vscode.Uri[] = [];
@@ -18,7 +20,7 @@ export async function getFilesRecursively(directoryUri: vscode.Uri): Promise<vsc
             if (isDirectory) {
                 // Skip blocked directories and special patterns
                 if (!blockedDirs.has(name) &&
-                    !name.startsWith("__") && 
+                    !name.startsWith("__") &&
                     !name.endsWith("__") &&
                     !name.startsWith('.') // Skip hidden directories
                 ) {
@@ -65,27 +67,46 @@ export function openFileAtLine(file: string, line: number) {
     })
 }
 
-export async function getFrameworkFiles(extensions: string[]) {
-    const config = vscode.workspace.getConfiguration("OctAPI");
-    const routePath = config.get<string>("path", "./src/");
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-
-    if (!workspaceFolders) {
-        console.log("No workspace folder is open.");
+export async function getFrameworkFiles(frameworkName: string) {
+    const framework = frameworks.find(f => f.name === frameworkName);
+    if (!framework) {
+        console.error("Framework not found:", frameworkName);
         return [];
     }
-
-    const workspaceRoot = workspaceFolders[0].uri.fsPath;
-    const absoluteRoutePath = path.resolve(workspaceRoot, routePath);
-    const directoryUri = vscode.Uri.file(absoluteRoutePath);
 
     try {
-        const allFiles = await getFilesRecursively(directoryUri);
-        return allFiles.filter(uri => 
-            extensions.some(ext => uri.fsPath.endsWith(ext))
+        const config = vscode.workspace.getConfiguration("OctAPI");
+        const routePath = config.get<string>("path", "./src/");
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+
+        if (!workspaceFolder) {
+            console.error("No workspace folder found.");
+            return [];
+        }
+
+        const directoryUri = vscode.Uri.joinPath(workspaceFolder.uri, routePath);
+        const files = await getFilesRecursively(directoryUri);
+        return files.filter(uri =>
+            uri && uri.fsPath && // Add null check
+            framework.extensions.includes(path.extname(uri.fsPath).toLowerCase())
         );
     } catch (error) {
-        console.error("Error retrieving framework files:", error);
+        console.error("File retrieval failed:", error);
         return [];
     }
+}
+
+export async function parseSingleFile(uri: vscode.Uri): Promise<Route[]> {
+    const config = vscode.workspace.getConfiguration("OctAPI");
+    const frameworkName = config.get<string>("framework", "Express");
+    const framework = frameworks.find(f => f.name === frameworkName);
+
+    if (!framework) return [];
+
+    // Check if file extension matches framework's supported extensions
+    const ext = uri.fsPath.split('.').pop()?.toLowerCase() || '';
+    if (!framework.extensions.includes(`.${ext}`)) return [];
+
+    const routes = await framework.function(uri);
+    return routes;
 }

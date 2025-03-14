@@ -1,3 +1,5 @@
+import * as vscode from "vscode"
+
 export interface Route {
     method: string
     path: string
@@ -6,4 +8,10 @@ export interface Route {
     fileLine: number
     routeId?: string
     isStarred?: boolean
+}
+
+export interface Framework {
+    name: string;
+    function: (fileUri: vscode.Uri) => Promise<Route[]>;
+    extensions: string[];
 }

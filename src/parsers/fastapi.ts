@@ -3,33 +3,27 @@ import Parser from "tree-sitter";
 import Python from "tree-sitter-python";
 import * as vscode from "vscode";
 import { Route } from "../types";
-import { getFrameworkFiles } from "../utils/fileUtils";
 
 const VALID_METHODS = new Set(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]);
 
-export default async function extractFastAPIRoutes(): Promise<Route[]> {
-    const pyFiles = await getFrameworkFiles(['.py']);
+export default async function extractFlaskRoutes(fileUri: vscode.Uri): Promise<Route[]> {
+    if (!fileUri) {
+        console.error("No file URI provided");
+        return [];
+    }
     const parser = createParser();
-
-    return processFiles(pyFiles, parser);
+    const routesList: Route[] = [];
+    const fileBytes = await vscode.workspace.fs.readFile(fileUri);
+    const code = Buffer.from(fileBytes).toString("utf-8");
+    const tree = parser.parse(code);
+    processTree(tree, fileUri.fsPath, routesList);
+    return routesList;
 }
 
 function createParser(): Parser {
     const parser = new Parser();
     parser.setLanguage(Python as unknown as Parser.Language);
     return parser;
-}
-
-async function processFiles(pyFiles: vscode.Uri[], parser: Parser): Promise<Route[]> {
-    const routesList: Route[] = [];
-
-    for (const fileUri of pyFiles) {
-        const document = await vscode.workspace.openTextDocument(fileUri);
-        const tree = parser.parse(document.getText());
-        processTree(tree, fileUri.fsPath, routesList);
-    }
-
-    return routesList;
 }
 
 function processTree(tree: Parser.Tree, filePath: string, routesList: Route[]): void {
@@ -49,7 +43,7 @@ function processTree(tree: Parser.Tree, filePath: string, routesList: Route[]): 
         if (node.type === "decorated_definition") {
             const classDef = node.children.find(c => c.type === "class_definition");
             const functionDef = node.children.find(c => c.type === "function_definition");
-            
+
             if (classDef) {
                 processClassDefinition(node, "", filePath, routesList, routerPrefixes);
             } else if (functionDef) {
@@ -93,13 +87,13 @@ function processFastAPIRoute(
     routerPrefixes: Map<string, string>
 ): void {
     const decorators = node.children.filter(c => c.type === "decorator");
-    
+
     decorators.forEach(decorator => {
         const decoratorCall = decorator.children[1]?.text;
         if (!decoratorCall) return;
 
         const [decoratorName, pathArg] = parseDecoratorCall(decoratorCall);
-        
+
         // Check for router reference with prefix
         const routerMatch = decoratorCall.match(/(\w+)\.(get|post|put|delete|patch|head|options|api_route)/);
         let routerPrefix = "";
@@ -107,7 +101,7 @@ function processFastAPIRoute(
             routerPrefix = routerPrefixes.get(routerMatch[1])!;
         }
 
-        const fullPath = pathArg 
+        const fullPath = pathArg
             ? path.join(routerPrefix, basePath, pathArg).replace(/\\/g, "/").replace(/\/+/g, "/")
             : path.join(routerPrefix, basePath).replace(/\\/g, "/").replace(/\/+/g, "/");
 
@@ -143,7 +137,7 @@ function processClassMethod(
         if (!decoratorCall) return;
 
         const [decoratorName] = parseDecoratorCall(decoratorCall);
-        
+
         // Check for router reference with prefix
         const routerMatch = decoratorCall.match(/(\w+)\.(get|post|put|delete|patch|head|options|api_route)/);
         let routerPrefix = "";

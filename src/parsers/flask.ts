@@ -3,15 +3,21 @@ import Parser from "tree-sitter";
 import Python from "tree-sitter-python";
 import * as vscode from "vscode";
 import { Route } from "../types";
-import { getFrameworkFiles } from "../utils/fileUtils";
 
 const VALID_METHODS = new Set(["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]);
 
-export default async function extractFlaskRoutes(): Promise<Route[]> {
-    const pyFiles = await getFrameworkFiles(['.py']);
+export default async function extractFlaskRoutes(fileUri: vscode.Uri): Promise<Route[]> {
+    if (!fileUri) {
+        console.error("No file URI provided");
+        return [];
+    }
     const parser = createParser();
-
-    return processFiles(pyFiles, parser);
+    const routesList: Route[] = [];
+    const fileBytes = await vscode.workspace.fs.readFile(fileUri);
+    const code = Buffer.from(fileBytes).toString("utf-8");
+    const tree = parser.parse(code);
+    processTree(tree, fileUri.fsPath, routesList);
+    return routesList;
 }
 
 function createParser(): Parser {
@@ -20,24 +26,12 @@ function createParser(): Parser {
     return parser;
 }
 
-async function processFiles(pyFiles: vscode.Uri[], parser: Parser): Promise<Route[]> {
-    const routesList: Route[] = [];
-
-    for (const fileUri of pyFiles) {
-        const document = await vscode.workspace.openTextDocument(fileUri);
-        const tree = parser.parse(document.getText());
-        processTree(tree, fileUri.fsPath, routesList);
-    }
-
-    return routesList;
-}
-
 function processTree(tree: Parser.Tree, filePath: string, routesList: Route[]): void {
     function traverse(node: Parser.SyntaxNode, basePath = "") {
         if (node.type === "decorated_definition") {
             const classDef = node.children.find(c => c.type === "class_definition");
             const functionDef = node.children.find(c => c.type === "function_definition");
-            
+
             if (classDef) {
                 processClassDefinition(node, basePath, filePath, routesList);
             } else if (functionDef) {
@@ -79,7 +73,7 @@ function processFunctionRoute(
     routesList: Route[]
 ): void {
     const decorators = node.children.filter(c => c.type === "decorator");
-    
+
     decorators.forEach(decorator => {
         const decoratorCall = decorator.children[1]?.text;
         if (!decoratorCall) return;
