@@ -38,9 +38,9 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 
 Have a suggestion or found a bug? Let us know!  
 👉 [Submit feedback here](https://forms.gle/4BuPRUAzjA2JBpjd8)
-
-🔍 **Request Support for More Frameworks!**  
+ 
 OctAPI is constantly evolving. If your preferred framework isn't supported yet, open a [new issue on GitHub](https://github.com/Hasbi-sabah/OctAPI/issues/new?template=framework-request.yml) and let us know!
+
 ---
 
 ## Requirements
