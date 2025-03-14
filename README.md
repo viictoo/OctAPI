@@ -23,6 +23,7 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 
 - **Smart Route Detection** – Scans all files within a user-defined directory to identify API routes.
 - **Framework Support** – Works with Express, NestJS, Koa, Flask, and FastAPI.
+- **Smart File Watching & Caching** – Automatically detects file changes and updates routes in real time.
 - **Jump to Code** – Clicking a route takes you directly to the exact line where it's defined.
 - **Quick Copy with Prefixing** – Hover over a route to reveal a copy button, with an option to specify a route prefix.
 - **Flexible Organization** – Toggle between grouping by basepath or HTTP method.
@@ -38,6 +39,8 @@ OctAPI provides a seamless way to explore and manage your API routes within Visu
 Have a suggestion or found a bug? Let us know!  
 👉 [Submit feedback here](https://forms.gle/4BuPRUAzjA2JBpjd8)
 
+🔍 **Request Support for More Frameworks!**  
+OctAPI is constantly evolving. If your preferred framework isn't supported yet, open a [new issue on GitHub](https://github.com/Hasbi-sabah/OctAPI/issues/new?template=framework-request.yml) and let us know!
 ---
 
 ## Requirements
@@ -91,6 +94,11 @@ You can install OctAPI from the following sources:
 ---
 
 ## Release Notes
+### v0.5.0 - 2025-03-14  
+- **File Watcher with Caching** – OctAPI now detects file changes and updates routes automatically, significantly improving performance.  
+- **Automated File Retrieval for Frameworks** – A new utility streamlines file collection based on framework-specific structures, enhancing compatibility.  
+- **Improved File Filtering and Directory Handling** – Directories are now processed in batches to prevent stack overflows.  
+- **Updated Welcome Message** – Encourages users to report unsupported frameworks via a dedicated GitHub issue template.  
 
 ### v0.4.1 - 2025-03-10 
 - **Postman Export Grouping**: Routes are now grouped into subfolders based on their basepath instead of all being placed in the root folder, making API organization clearer.

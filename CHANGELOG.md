@@ -2,6 +2,15 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.5.0] - 2025-03-14  
+### Added  
+- **File Watcher with Caching**: Implemented a file watcher that monitors API files for changes, reducing the need for full rescans. Includes a caching system for efficient route storage.  
+- **Automated File Retrieval for Frameworks**: Introduced a utility to streamline file collection based on framework-specific structures.  
+
+### Changed  
+- **Improved File Filtering and Directory Handling**: Refactored file retrieval logic to enhance directory and file filtering, now processing directories in batches to prevent stack overflows.  
+- **Updated Welcome Message**: The welcome message now encourages users to report unsupported frameworks to a newly added GitHub issue template.   
+
 ## [0.4.1] - 2025-03-10  
 ### Changed  
 - **Postman Export Grouping**: Routes are now grouped into subfolders based on their basepath instead of all being placed in the root folder, making API organization clearer.
