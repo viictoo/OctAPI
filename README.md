@@ -94,6 +94,11 @@ You can install OctAPI from the following sources:
 ---
 
 ## Release Notes
+
+### v0.5.1 - 2025-03-15 
+- Fixed infinite loading when no routes were detected.  
+- Resolved an issue where configuration changes weren't applying properly.  
+
 ### v0.5.0 - 2025-03-14  
 - **File Watcher with Caching** – OctAPI now detects file changes and updates routes automatically, significantly improving performance.  
 - **Automated File Retrieval for Frameworks** – A new utility streamlines file collection based on framework-specific structures, enhancing compatibility.  
@@ -112,27 +117,6 @@ You can install OctAPI from the following sources:
 ### v0.3.0 - 2025-03-04
 - **Favorite Routes Management**: Added support for starring routes with persistence and toggle functionality, and introduced a command to clear favorite routes with updated UI and improved layout.
 - **Refactored Command Handling**: Removed unused commands for opening routes and copying route paths.
-
-### v0.2.0 - 2025-02-25
-- **FastAPI Support**: Now detects API routes for FastAPI, making OctAPI more versatile for Python developers.
-- **Custom Route Prefixing**: Users can now specify a route prefix when copying routes.
-- **Distinct Icon and Color for PATCH Routes**: PATCH routes now have unique color and icon for better visual distinction.
-
-### v0.1.0 - 2025-02-20
-- **Flask Support**: Now detects API routes for Flask, including both decorator-based and class-based routes.
-- **Smarter Grouping Toggle**: The "Group by Basepath" button now only appears when multiple basepaths exist.
-
-### v0.0.3 - 2025-02-19
-- **Copy Route Feature**: A copy button now appears when hovering over a route.
-- **Feedback Links**: Added links to a Google Form for reporting bugs and giving feedback.
-- **File Watching Bug Fix**: Route updates were previously triggered by file changes anywhere in the workspace; now only changes within the user-specified folder trigger updates.
-- **Console Logs Removed**: Removed unnecessary console logs for a cleaner development experience.
-
-### v0.0.2 - 2025-02-15
-- **Project Streamlining**: Removed extra files and cleaned up heavy, unused dependencies for a lighter extension.
-
-### v0.0.1 - 2025-02-14
-- **Initial Release**: Supports Express.js, NestJS, and Koa frameworks with automatic route detection and clickable routes.
 
 ---
 

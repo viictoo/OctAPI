@@ -2,6 +2,11 @@
 
 All notable changes to the "OctAPI" extension will be documented in this file.
 
+## [0.5.1] - 2025-03-15  
+### Fixed  
+- **Infinite Loading on Empty Return**: Resolved an issue where the extension would get stuck in a loading state if an empty result was returned.  
+- **Configuration Changes Not Applying**: Fixed a bug where changes to the extension's configuration were not being applied correctly without a restart.  
+
 ## [0.5.0] - 2025-03-14  
 ### Added  
 - **File Watcher with Caching**: Implemented a file watcher that monitors API files for changes, reducing the need for full rescans. Includes a caching system for efficient route storage.  
