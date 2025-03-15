@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Listen for configuration changes and refresh the webview if needed
 	vscode.workspace.onDidChangeConfiguration((event) => {
 		if (event.affectsConfiguration("OctAPI.path") || event.affectsConfiguration("OctAPI.framework")) {
-			provider.updateWebview();
+			provider.updateWebview(true);
 		}
 	});
 

@@ -48,11 +48,6 @@ export async function initializeCache(provider: OctAPIWebviewProvider) {
         const framework = config.get<string>("framework", "Express");
         const files = await getFrameworkFiles(framework);
 
-        if (!files || !files.length) {
-            console.log("No files found for framework", framework);
-            return;
-        }
-
         // Process each file and update the cache
         const results = await Promise.allSettled(
             files.map(async file => {
