@@ -154,6 +154,12 @@ Licensed under the **Apache 2.0 License**. See [LICENSE](LICENSE) for details.
 
 ---
 
+## Privacy Policy
+
+OctAPI runs entirely locally—no data collection, tracking, or telemetry. [Learn more](PRIVACY.md).  
+
+---
+
 ## Contact
 
 - **Author**: Hasbi Sabah
